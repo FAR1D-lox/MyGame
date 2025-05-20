@@ -22,11 +22,13 @@ namespace MyGame.Model
 
         public bool DestroyPermission { get; private set; }
 
-        public RectangleCollider Collider { get; set; }
+        public RectangleCollider Collider { get; private set; }
 
-        public PlayerAttack(Vector2 position, int width, int height)
+        public IGameplayModel.Direction Direction { get; private set; }
+
+        public PlayerAttack(Vector2 position, int width, int height, IGameplayModel.Direction direction)
         {
-            timer = 0;
+            timer = 25;
             ImagePos = new Vector2();
             PrevPos = position;
             Pos = position;
@@ -35,18 +37,27 @@ namespace MyGame.Model
             DestroyPermission = false;
             Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
                 width, height);
+            Direction = direction;
+        }
+
+        public void MoveCollider(Vector2 newPosition)
+        {
+            Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
+                Width, Height);
         }
 
         public void Move(float xMove, float yMove)
         {
             ChangePreviousPosition(Pos.X, Pos.Y);
             Pos += new Vector2(xMove, yMove);
+            MoveCollider(Pos);
         }
 
         public void ChangePosition(float xPos, float yPos)
         {
             ChangePreviousPosition(Pos.X, Pos.Y);
             Pos = new Vector2(xPos, yPos);
+            MoveCollider(Pos);
         }
 
         public void ChangePreviousPosition(float xPos, float yPos)
@@ -70,22 +81,16 @@ namespace MyGame.Model
 
         public Rectangle? Animate(int heightImage, int widthImage)
         {
-            if (timer <= 0)
-            {
-                timer = 25;
+            if (timer % 5 == 0)
                 ImagePos = Animation.AnimateObject(Width, Height,
                     widthImage, heightImage, ImagePos, Pos - PrevPos);
-            }
-            timer -= 1;
-            if (timer != 0)
-            {
-                return new Rectangle((int)ImagePos.X, (int)ImagePos.Y, Width, Height);
-            }
-            else
+            if (timer <= 0)
             {
                 MayDestroy();
-                return null;
+                timer = 25;
             }
+            timer -= 1;
+            return new Rectangle((int)ImagePos.X, (int)ImagePos.Y, Width, Height);
         }
 
         private void MayDestroy()
@@ -95,7 +100,10 @@ namespace MyGame.Model
 
         public void Update()
         {
-            
+            if (Direction == IGameplayModel.Direction.left)
+                Move(-4, 0);
+            else if (Direction == IGameplayModel.Direction.right)
+                Move(4, 0);
         }
     }
 }

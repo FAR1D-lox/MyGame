@@ -59,7 +59,7 @@ namespace MyGame.View
             Textures.Add((byte)Factory.ObjectTypes.grass, Content.Load<Texture2D>("Grass"));
             Textures.Add((byte)Factory.ObjectTypes.dirt, Content.Load<Texture2D>("Dirt"));
             Textures.Add((byte)Factory.ObjectTypes.dirtNoSolid, Content.Load<Texture2D>("Dirt"));
-            Textures.Add((byte)Factory.ObjectTypes.playerAttack, Content.Load<Texture2D>("Square"));
+            Textures.Add((byte)Factory.ObjectTypes.playerAttack, Content.Load<Texture2D>("SplashFrames"));
 
         }
 

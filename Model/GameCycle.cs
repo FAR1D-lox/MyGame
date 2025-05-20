@@ -213,11 +213,13 @@ namespace MyGame.Model
             
             if (direction == IGameplayModel.Direction.right || direction == IGameplayModel.Direction.rightUp)
             {
-                Objects.Add(CurrentId, Factory.CreatePlayerAttack(player.Pos.X + player.Width, player.Pos.Y));
+                Objects.Add(CurrentId,Factory.CreatePlayerAttack(
+                    player.Pos.X + player.Width, player.Pos.Y, IGameplayModel.Direction.right));
             }
             else if (direction == IGameplayModel.Direction.left || direction == IGameplayModel.Direction.leftUp)
             {
-                Objects.Add(CurrentId, Factory.CreatePlayerAttack(player.Pos.X - player.Width, player.Pos.Y));
+                Objects.Add(CurrentId, Factory.CreatePlayerAttack(
+                    player.Pos.X - player.Width, player.Pos.Y, IGameplayModel.Direction.left));
             }
             AttackId = CurrentId;
             CurrentId++;

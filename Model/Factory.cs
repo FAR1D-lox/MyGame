@@ -19,7 +19,7 @@ namespace MyGame.Model
                 {"Grass", ((byte) ObjectTypes.grass, 120, 120) },
                 {"Dirt", ((byte) ObjectTypes.dirt, 120, 120) },
                 {"DirtNoSolid", ((byte) ObjectTypes.dirtNoSolid, 120, 120) },
-                {"PlayerAttack", ((byte) ObjectTypes.playerAttack, 32, 64) }
+                {"PlayerAttack", ((byte) ObjectTypes.playerAttack, 16, 64) }
             };
         public static MainCharacter CreateMainCharacter(float x, float y, Vector2 speed)
         {
@@ -72,11 +72,12 @@ namespace MyGame.Model
             return dirtNoSolid;
         }
 
-        public static PlayerAttack CreatePlayerAttack(float x, float y)
+        public static PlayerAttack CreatePlayerAttack(float x, float y, IGameplayModel.Direction direction)
         {
             var playerAttack = new PlayerAttack(new Vector2(x, y),
                 _objects["PlayerAttack"].width,
-                _objects["PlayerAttack"].height);
+                _objects["PlayerAttack"].height,
+                direction);
             playerAttack.ImageId = _objects["PlayerAttack"].type;
             return playerAttack;
         }

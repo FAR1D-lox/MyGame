@@ -19,7 +19,7 @@ namespace MyGame.Model
         public int Width { get; }
         public int Height { get; }
 
-        public RectangleCollider Collider { get; set; }
+        public RectangleCollider Collider { get; private set; }
 
         public Vector2 Speed { get; private set; }
 
