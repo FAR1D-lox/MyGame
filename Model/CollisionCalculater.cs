@@ -38,7 +38,7 @@ namespace MyGame.Model
             foreach (var Id in Objects.Keys)
             {
                 Vector2 initPos = Objects[Id].Pos;
-                Objects[Id].PrevPos = initPos;
+                Objects[Id].ChangePreviousPosition(initPos.X, initPos.Y);
                 Objects[Id].Update();
                 if (SolidObjects.ContainsKey(Id))
                     collisionObjects.Add(Id, initPos);
@@ -63,7 +63,7 @@ namespace MyGame.Model
                 }
             }
         }
-
+        
         private static HashSet<Vector2> CalculateObstacleCollision
         (
             (Vector2 initPos, int Id) obj1,
@@ -93,13 +93,13 @@ namespace MyGame.Model
             {
                 if (CheckLeftSide(gravityObj1) || CheckRightSide(gravityObj1))
                 {
-                    gravityObj1.Speed = new Vector2(0, 0);
+                    gravityObj1.ChangeSpeed(0, 0);
                 }
                 else
                 {
-                    gravityObj1.Speed = new Vector2(gravityObj1.Speed.X, 0);
+                    gravityObj1.ChangeSpeed(gravityObj1.Speed.X, 0);
                 }
-                gravityObj1.verticalSpeed = 0;
+                gravityObj1.PushTop();
                 CalculateReverseObjectMove(obj1, obj2);
             }
 
@@ -108,13 +108,13 @@ namespace MyGame.Model
                 obj1.initPos = gravityObj1.Pos;
                 if (CheckLeftSide(gravityObj1) || CheckRightSide(gravityObj1))
                 {
-                    gravityObj1.Speed = new Vector2(0, gravityObj1.Speed.Y + gravityObj1.verticalSpeed);
+                    gravityObj1.ChangeSpeed(0, gravityObj1.Speed.Y + gravityObj1.VerticalSpeed);
                 }
                 else
                 {
-                    gravityObj1.Speed = new Vector2(gravityObj1.Speed.X, gravityObj1.Speed.Y + gravityObj1.verticalSpeed);
+                    gravityObj1.ChangeSpeed(gravityObj1.Speed.X, gravityObj1.Speed.Y + gravityObj1.VerticalSpeed);
                 }
-                gravityObj1.Move(new Vector2(0, gravityObj1.verticalSpeed));
+                gravityObj1.Move(0, gravityObj1.VerticalSpeed);
                 CalculateReverseObjectMove(obj1, obj2);
             }
         }
@@ -150,7 +150,7 @@ namespace MyGame.Model
             {
                 oppositeDirection = Objects[obj.Id].Pos - obj.initPos;
                 oppositeDirection.Normalize();
-                Objects[obj.Id].Move(-oppositeDirection);
+                Objects[obj.Id].Move(-oppositeDirection.X, -oppositeDirection.Y);
             }
         }
         public static bool CheckIfGrounded(IGravity obj)
@@ -233,7 +233,7 @@ namespace MyGame.Model
         {
             foreach (var gravityObject in GravityObjects.Values)
             {
-                gravityObject.isGrounded = CheckIfGrounded(gravityObject);
+                gravityObject.IsGrounded = CheckIfGrounded(gravityObject);
             }
         }
     }

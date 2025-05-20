@@ -21,6 +21,7 @@ namespace MyGame.View
     public class ControlsEventArgs : EventArgs
     {
         public IGameplayModel.Direction direction { get; set; }
+        public IGameplayModel.MouseClick MouseLeftBottomState { get; set; }
     }
 
 }

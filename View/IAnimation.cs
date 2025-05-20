@@ -15,6 +15,6 @@ namespace MyGame.View
     {
         public int timer { get; }
         public Vector2 ImagePos { get; }
-        public Rectangle Animate(int heightImage, int widthImage);
+        public Rectangle? Animate(int heightImage, int widthImage);
     }
 }

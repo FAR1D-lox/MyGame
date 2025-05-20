@@ -14,7 +14,7 @@ namespace MyGame.Model
         public int ImageId { get; set; }
         public Vector2 Pos { get; set; }
         public Vector2 PrevPos { get; set; }
-        public Vector2 Speed { get; set; }
+        public Vector2 Speed { get; private set; }
         public int Width { get; }
         public int Height { get; }
 
@@ -26,17 +26,34 @@ namespace MyGame.Model
             Height = height;
         }
 
-        public void Move(Vector2 newPosition)
+        public void Move(float xMove, float yMove)
         {
+            ChangePreviousPosition(Pos.X, Pos.Y);
+            Pos += new Vector2(xMove, yMove);
+        }
 
+        public void ChangePosition(float xPos, float yPos)
+        {
+            ChangePreviousPosition(Pos.X, Pos.Y);
+            Pos = new Vector2(xPos, yPos);
+        }
+
+        public void ChangePreviousPosition(float xPos, float yPos)
+        {
+            PrevPos = new Vector2(xPos, yPos);
+        }
+
+        public void ChangeSpeed(float xSpeed, float ySpeed)
+        {
+            Speed = new Vector2(xSpeed, ySpeed);
+        }
+
+        public void SpeedUp(float xSpeed, float ySpeed)
+        {
+            Speed += new Vector2(xSpeed, ySpeed);
         }
 
         public void Update()
-        {
-
-        }
-
-        public void ChangePosition(Vector2 newPosition)
         {
 
         }

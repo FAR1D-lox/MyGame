@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyGame.View;
 
 namespace MyGame.Model
 {
@@ -22,6 +23,10 @@ namespace MyGame.Model
         private int CurrentId;
         private char[,] Map = new char[13, 9];
         private readonly int TileSize = 120;
+
+        private int AttackId;
+
+        private IGameplayModel.Direction Direction = IGameplayModel.Direction.None;
         public void Initialize()
         {
             Objects = new Dictionary<int, IObject>();
@@ -148,6 +153,32 @@ namespace MyGame.Model
             UpdateGravityObjectsSpeed();
             CollisionCalculater.ActivateCollisionCalculater(Objects, SolidObjects, GravityObjects);
 
+            if (Objects.ContainsKey(AttackId))
+            {
+                foreach (var gravityObject in GravityObjects)
+                {
+                    if (gravityObject.Value is Enemy enemy)
+                    {
+                        var playerAttack = Objects[AttackId] as PlayerAttack;
+                        if (RectangleCollider.IsCollided(playerAttack.Collider, enemy.Collider))
+                        {
+                            Objects.Remove(gravityObject.Key);
+                            GravityObjects.Remove(gravityObject.Key);
+                            SolidObjects.Remove(gravityObject.Key);
+                        }
+                    }
+                }
+            }
+
+            if (Objects.ContainsKey(AttackId))
+            {
+                var playerAttack = Objects[AttackId] as PlayerAttack;
+                if (playerAttack.DestroyPermission)
+                {
+                    Objects.Remove(AttackId);
+
+                }
+            }
 
             Vector2 playerShift = Objects[PlayerId].Pos - playerInitPos;
             Updated.Invoke(this, new GameplayEventArgs
@@ -157,21 +188,39 @@ namespace MyGame.Model
             });
         }
 
-
         public void UpdateGravityObjectsSpeed()
         {
             foreach (var gravityObject in GravityObjects.Values)
             {
-                if (!gravityObject.isGrounded)
-                {
-                    gravityObject.verticalSpeed += gravityObject.gravity;
-                    gravityObject.Speed = new Vector2(gravityObject.Speed.X, gravityObject.verticalSpeed);
-                }
-                else
-                {
-                    gravityObject.verticalSpeed = 0;
-                }
+                gravityObject.UpdateGravity();
             }
+        }
+
+        public void ControlMainCharacter(ControlsEventArgs e)
+        {
+            if (e.direction != IGameplayModel.Direction.None && e.direction != IGameplayModel.Direction.up)
+                Direction = e.direction;
+            if (e.MouseLeftBottomState == IGameplayModel.MouseClick.pressed)
+            {
+                PlayerAttack(Direction);
+            }
+            ChangePlayerSpeed(e.direction);
+        }
+
+        public void PlayerAttack(IGameplayModel.Direction direction)
+        {
+            MainCharacter player = Objects[PlayerId] as MainCharacter;
+            
+            if (direction == IGameplayModel.Direction.right || direction == IGameplayModel.Direction.rightUp)
+            {
+                Objects.Add(CurrentId, Factory.CreatePlayerAttack(player.Pos.X + player.Width, player.Pos.Y));
+            }
+            else if (direction == IGameplayModel.Direction.left || direction == IGameplayModel.Direction.leftUp)
+            {
+                Objects.Add(CurrentId, Factory.CreatePlayerAttack(player.Pos.X - player.Width, player.Pos.Y));
+            }
+            AttackId = CurrentId;
+            CurrentId++;
         }
 
         public void ChangePlayerSpeed(IGameplayModel.Direction direction)
@@ -182,34 +231,34 @@ namespace MyGame.Model
                 case IGameplayModel.Direction.right:
                     {
                         if (!CollisionCalculater.CheckRightSide(player))
-                            player.Speed += new Vector2(1, 0);
+                            player.SpeedUp(1, 0);
                         break;
                     }
                 case IGameplayModel.Direction.left:
                     {
                         if (!CollisionCalculater.CheckLeftSide(player))
-                            player.Speed += new Vector2(-1, 0);
+                            player.SpeedUp(-1, 0);
                         break;
                     }
                 case IGameplayModel.Direction.up:
                     {
-                        if (CollisionCalculater.CheckIfGrounded(player))
+                        if (!CollisionCalculater.CheckTop(player))
                             player.JumpAttempt();
                         break;
                     }
                 case IGameplayModel.Direction.leftUp:
                     {
                         if (!CollisionCalculater.CheckLeftSide(player))
-                            player.Speed += new Vector2(-1, 0);
-                        if (CollisionCalculater.CheckIfGrounded(player))
+                            player.SpeedUp(-1, 0);
+                        if (!CollisionCalculater.CheckTop(player))
                             player.JumpAttempt();
                         break;
                     }
                 case IGameplayModel.Direction.rightUp:
                     {
                         if (!CollisionCalculater.CheckRightSide(player))
-                            player.Speed += new Vector2(1, 0);
-                        if (CollisionCalculater.CheckIfGrounded(player))
+                            player.SpeedUp(1, 0);
+                        if (!CollisionCalculater.CheckTop(player))
                             player.JumpAttempt();
                         break;
                     }

@@ -30,7 +30,7 @@ namespace MyGame.Presenter
 
         private void ViewModelMovePlayer(object sender, ControlsEventArgs e)
         {
-            gameplayModel.ChangePlayerSpeed(e.direction);
+            gameplayModel.ControlMainCharacter(e);
         }
 
         private void ModelViewUpdate(object sender, GameplayEventArgs e)

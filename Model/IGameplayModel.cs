@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyGame.View;
 
 namespace MyGame.Model
 {
@@ -16,8 +17,15 @@ namespace MyGame.Model
         Dictionary<int, IObject> Objects { get; set; }
         event EventHandler<GameplayEventArgs> Updated;
         void Update(GameTime gameTime);
-        void ChangePlayerSpeed(Direction direction);
+        void ControlMainCharacter(ControlsEventArgs e);
         void Initialize();
+        
+        public enum MouseClick : byte
+        {
+            released,
+            pressed
+        }
+
         public enum Direction : byte
         {
             left,

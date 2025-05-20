@@ -16,30 +16,19 @@ namespace MyGame.Model
         public int ImageId { get; set; }
 
         public Vector2 Pos { get; private set; }
-        public Vector2 PrevPos { get; set; }
-        private Vector2 _speed;
+        public Vector2 PrevPos { get; private set; }
         public int Width { get; }
         public int Height { get; }
 
         public RectangleCollider Collider { get; set; }
 
-        public Vector2 Speed
-        {
-            get { return _speed; }
-            set
-            {
-                _speed = value;
-                if (_speed.X > 5)
-                    _speed.X = 5;
-                else if (_speed.X < -5)
-                    _speed.X = -5;
-            }
-        }
+        public Vector2 Speed { get; private set; }
 
-        public bool isGrounded { get; set; }
-        public float jumpForce { get; set; }
-        public float gravity { get; set; }
-        public float verticalSpeed { get; set; }
+        //public bool IsGrounded { get; private set; }
+        public bool IsGrounded { get; set; }
+        public float JumpForce { get; private set; }
+        public float Gravity { get; }
+        public float VerticalSpeed { get; private set; }
 
         public Vector2 ImagePos { get; private set; }
         public int timer { get; private set; }
@@ -54,18 +43,18 @@ namespace MyGame.Model
             Height = height;
             Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
                 width, height);
-            jumpForce = 15f;
-            gravity = 0.5f;
-            verticalSpeed = 0f;
-            isGrounded = false;
+            JumpForce = 15f;
+            Gravity = 0.5f;
+            VerticalSpeed = 0f;
+            IsGrounded = false;
         }
 
         public void JumpAttempt()
         {
-            if (isGrounded)
+            if (IsGrounded)
             {
-                verticalSpeed = -jumpForce;
-                isGrounded = false;
+                VerticalSpeed = -JumpForce;
+                IsGrounded = false;
             }
         }
 
@@ -75,21 +64,59 @@ namespace MyGame.Model
                 Width, Height);
         }
 
-        public void Move(Vector2 positionChange)
+        public void Move(float xMove, float yMove)
         {
-            PrevPos = new Vector2(Pos.X, Pos.Y);
-            Pos += positionChange;
+            ChangePreviousPosition(Pos.X, Pos.Y);
+            Pos += new Vector2(xMove, yMove);
             MoveCollider(Pos);
         }
 
-        public void ChangePosition(Vector2 newPosition)
+        public void ChangePosition(float xPos, float yPos)
         {
-            PrevPos = new Vector2(Pos.X, Pos.Y);
-            Pos = newPosition;
+            ChangePreviousPosition(Pos.X, Pos.Y);
+            Pos = new Vector2(xPos, yPos);
             MoveCollider(Pos);
         }
 
-        public Rectangle Animate(int widthImage, int heightImage)
+        public void ChangePreviousPosition(float xPos, float yPos)
+        {
+            PrevPos = new Vector2(xPos, yPos);
+        }
+
+        public void ChangeSpeed(float xSpeed, float ySpeed)
+        {
+            Speed = new Vector2(xSpeed, ySpeed);
+        }
+
+        public void SpeedUp(float xSpeed, float ySpeed)
+        {
+            Speed += new Vector2(xSpeed, ySpeed);
+            if (Speed.X > 5)
+                ChangeSpeed(5, ySpeed);
+            if (Speed.X < -5)
+                ChangeSpeed(-5, ySpeed);
+        }
+
+        public void UpdateGravity()
+        {
+            if (!IsGrounded)
+            {
+                VerticalSpeed += Gravity;
+                ChangeSpeed(Speed.X, VerticalSpeed);
+            }
+            else
+            {
+                VerticalSpeed = 0;
+            }
+            //IsGrounded = CollisionCalculater.CheckIfGrounded(this);
+        }
+
+        public void PushTop()
+        {
+            VerticalSpeed = 0;
+        }
+
+        public Rectangle? Animate(int widthImage, int heightImage)
         {
             if (timer <= 0)
             {
@@ -104,15 +131,14 @@ namespace MyGame.Model
 
         public void Update()
         {
-            Move(Speed);
+            Move(Speed.X, Speed.Y);
             if (Speed.X != 0)
             {
                 if (Speed.X < -1e-3)
-                    Speed = new Vector2(Speed.X + 0.2f, Speed.Y);
+                    ChangeSpeed(Speed.X + 0.2f, Speed.Y);
                 if (Speed.X > 1e-3)
-                    Speed = new Vector2(Speed.X - 0.2f, Speed.Y);
+                    ChangeSpeed(Speed.X - 0.2f, Speed.Y);
             }
         }
-
     }
 }

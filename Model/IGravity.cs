@@ -11,11 +11,13 @@ namespace MyGame.Model
 {
     public interface IGravity : IObject
     {
-        bool isGrounded { get; set; }
-        float jumpForce { get; set; }
-        float gravity { get; set; }
-        float verticalSpeed { get; set; }
+        bool IsGrounded { get; set; }
+        float JumpForce { get; }
+        float Gravity { get; }
+        float VerticalSpeed { get; }
 
         void JumpAttempt();
+        void UpdateGravity();
+        void PushTop();
     }
 }

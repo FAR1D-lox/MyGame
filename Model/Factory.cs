@@ -18,7 +18,8 @@ namespace MyGame.Model
                 {"Enemy", ((byte) ObjectTypes.enemy, 64, 64) },
                 {"Grass", ((byte) ObjectTypes.grass, 120, 120) },
                 {"Dirt", ((byte) ObjectTypes.dirt, 120, 120) },
-                {"DirtNoSolid", ((byte) ObjectTypes.dirtNoSolid, 120, 120) }
+                {"DirtNoSolid", ((byte) ObjectTypes.dirtNoSolid, 120, 120) },
+                {"PlayerAttack", ((byte) ObjectTypes.playerAttack, 32, 64) }
             };
         public static MainCharacter CreateMainCharacter(float x, float y, Vector2 speed)
         {
@@ -27,7 +28,7 @@ namespace MyGame.Model
                 _objects["MainCharacter"].width,
                 _objects["MainCharacter"].height);
             player.ImageId = _objects["MainCharacter"].type;
-            player.Speed = speed;
+            player.ChangeSpeed(speed.X, speed.Y);
             return player;
         }
 
@@ -38,7 +39,7 @@ namespace MyGame.Model
                 _objects["Enemy"].width,
                 _objects["Enemy"].height);
             enemy.ImageId = _objects["Enemy"].type;
-            enemy.Speed = speed;
+            enemy.ChangeSpeed(speed.X, speed.Y);
             return enemy;
         }
 
@@ -71,13 +72,23 @@ namespace MyGame.Model
             return dirtNoSolid;
         }
 
+        public static PlayerAttack CreatePlayerAttack(float x, float y)
+        {
+            var playerAttack = new PlayerAttack(new Vector2(x, y),
+                _objects["PlayerAttack"].width,
+                _objects["PlayerAttack"].height);
+            playerAttack.ImageId = _objects["PlayerAttack"].type;
+            return playerAttack;
+        }
+
         public enum ObjectTypes : byte
         {
             player,
             enemy,
             grass,
             dirt,
-            dirtNoSolid
+            dirtNoSolid,
+            playerAttack
         }
     }
 }

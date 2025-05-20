@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MyGame.Model;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MyGame.View
 {
@@ -18,11 +19,15 @@ namespace MyGame.View
         private Vector2 VisualShift = Vector2.Zero;
 
         private IGameplayModel.Direction direction;
+        private IGameplayModel.MouseClick mouseLeftBottomState;
+
+        private int timer;
         public GameCycleView()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            timer = 0;
 
         }
 
@@ -54,11 +59,23 @@ namespace MyGame.View
             Textures.Add((byte)Factory.ObjectTypes.grass, Content.Load<Texture2D>("Grass"));
             Textures.Add((byte)Factory.ObjectTypes.dirt, Content.Load<Texture2D>("Dirt"));
             Textures.Add((byte)Factory.ObjectTypes.dirtNoSolid, Content.Load<Texture2D>("Dirt"));
+            Textures.Add((byte)Factory.ObjectTypes.playerAttack, Content.Load<Texture2D>("Square"));
 
         }
 
         protected override void Update(GameTime gameTime)
         {
+            var mouseLeftClick = Mouse.GetState().LeftButton;
+            if (mouseLeftClick == ButtonState.Pressed && timer <= 0)
+            {
+                mouseLeftBottomState = IGameplayModel.MouseClick.pressed;
+                timer = 100;
+            }
+            else
+            {
+                mouseLeftBottomState = IGameplayModel.MouseClick.released;
+                timer -= 1;
+            }
             var keys = Keyboard.GetState().GetPressedKeys();
             if (keys.Length > 0)
             {
@@ -80,35 +97,14 @@ namespace MyGame.View
                             if (k1 == Keys.A)
                             {
                                 direction = IGameplayModel.Direction.leftUp;
-                                PlayerMoved.Invoke
-                                (
-                                    this, new ControlsEventArgs
-                                    {
-                                        direction = IGameplayModel.Direction.leftUp
-                                    }
-                                );
                             }
                             else if (k1 == Keys.D)
                             {
                                 direction = IGameplayModel.Direction.rightUp;
-                                PlayerMoved.Invoke
-                                (
-                                    this, new ControlsEventArgs
-                                    {
-                                        direction = IGameplayModel.Direction.rightUp
-                                    }
-                                );
                             }
                             else
                             {
                                 direction = IGameplayModel.Direction.up;
-                                PlayerMoved.Invoke
-                                (
-                                    this, new ControlsEventArgs
-                                    {
-                                        direction = IGameplayModel.Direction.up
-                                    }
-                                );
                             }
                             break;
                         }
@@ -117,24 +113,10 @@ namespace MyGame.View
                             if (k1 == Keys.Space)
                             {
                                 direction = IGameplayModel.Direction.leftUp;
-                                PlayerMoved.Invoke
-                                (
-                                    this, new ControlsEventArgs
-                                    {
-                                        direction = IGameplayModel.Direction.leftUp
-                                    }
-                                );
                             }
                             else
                             {
                                 direction = IGameplayModel.Direction.left;
-                                PlayerMoved.Invoke
-                                (
-                                    this, new ControlsEventArgs
-                                    {
-                                        direction = IGameplayModel.Direction.left
-                                    }
-                                );
                             }
                             break;
                         }
@@ -143,28 +125,38 @@ namespace MyGame.View
                             if (k1 == Keys.Space)
                             {
                                 direction = IGameplayModel.Direction.rightUp;
-                                PlayerMoved.Invoke
-                                (
-                                    this, new ControlsEventArgs
-                                    {
-                                        direction = IGameplayModel.Direction.rightUp
-                                    }
-                                );
                             }
                             else
                             {
                                 direction = IGameplayModel.Direction.right;
-                                PlayerMoved.Invoke
-                                (
-                                    this, new ControlsEventArgs
-                                    {
-                                        direction = IGameplayModel.Direction.right
-                                    }
-                                );
                             }
                             break;
                         }
+                    case Keys.None:
+                        {
+                            direction = IGameplayModel.Direction.None;
+                            break;
+                        }
                 }
+                PlayerMoved.Invoke
+                (
+                    this, new ControlsEventArgs
+                    {
+                        direction = direction,
+                        MouseLeftBottomState = mouseLeftBottomState
+                    }
+                );
+            }
+            else
+            {
+                PlayerMoved.Invoke
+                    (
+                        this, new ControlsEventArgs
+                        {
+                            direction = IGameplayModel.Direction.None,
+                            MouseLeftBottomState = mouseLeftBottomState
+                        }
+                    );
             }
 
 
