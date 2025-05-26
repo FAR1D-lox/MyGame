@@ -13,6 +13,10 @@ namespace MyGame.View
     {
         public static Vector2 AnimateObject(int widthObj, int heightObj, int widthImage, int heightImage, Vector2 imagePos, Vector2 possitionDifference)
         {
+            if (imagePos == new Vector2(int.MinValue, int.MinValue))
+            {
+                return new Vector2(0, 0);
+            }
             if (possitionDifference.Y != 0)
             {
                 if (possitionDifference.X > 0)
@@ -28,7 +32,7 @@ namespace MyGame.View
                     else if (imagePos.Y == heightObj)
                     {
                         if (imagePos.X == widthImage - widthObj)
-                            return new Vector2(widthObj, heightObj);
+                            return new Vector2(0, heightObj);
                         return new Vector2(imagePos.X + widthObj, heightObj);
                     }
                 }
@@ -39,7 +43,7 @@ namespace MyGame.View
                     else if (imagePos.Y == 0)
                     {
                         if (imagePos.X == widthImage - widthObj)
-                            return new Vector2(widthObj, 0);
+                            return new Vector2(0, 0);
                         return new Vector2(imagePos.X + widthObj, 0);
                     }
                 }

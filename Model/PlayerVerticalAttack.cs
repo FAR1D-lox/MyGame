@@ -1,14 +1,17 @@
-﻿using Microsoft.Xna.Framework;
-using MyGame.View;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using MyGame.View;
 
 namespace MyGame.Model
 {
-    public class PlayerAttack : IObject, IAnimation
+    public class PlayerVerticalAttack : IObject, IAnimation
     {
         public int ImageId { get; set; }
         public Vector2 Pos { get; private set; }
@@ -17,7 +20,7 @@ namespace MyGame.Model
         public int Width { get; }
         public int Height { get; }
 
-        public int timer { get; private set; }
+        public int AnimationTimer { get; private set; }
         public Vector2 ImagePos { get; private set; }
 
         public bool DestroyPermission { get; private set; }
@@ -25,12 +28,15 @@ namespace MyGame.Model
         public RectangleCollider Collider { get; private set; }
 
         public IGameplayModel.Direction Direction { get; private set; }
+        public int DestructionTimer { get; private set; }
 
-        public PlayerAttack(Vector2 position, int width, int height, IGameplayModel.Direction direction)
+
+
+        public PlayerVerticalAttack(Vector2 position, int width, int height, IGameplayModel.Direction direction)
         {
-            timer = 25;
+            AnimationTimer = 0;
             ImagePos = new Vector2();
-            PrevPos = position;
+            PrevPos = Pos;
             Pos = position;
             Width = width;
             Height = height;
@@ -38,9 +44,10 @@ namespace MyGame.Model
             Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
                 width, height);
             Direction = direction;
+            DestructionTimer = 16;
         }
 
-        public void MoveCollider(Vector2 newPosition)
+        public void MoveCollider()
         {
             Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
                 Width, Height);
@@ -50,14 +57,14 @@ namespace MyGame.Model
         {
             ChangePreviousPosition(Pos.X, Pos.Y);
             Pos += new Vector2(xMove, yMove);
-            MoveCollider(Pos);
+            MoveCollider();
         }
 
         public void ChangePosition(float xPos, float yPos)
         {
             ChangePreviousPosition(Pos.X, Pos.Y);
             Pos = new Vector2(xPos, yPos);
-            MoveCollider(Pos);
+            MoveCollider();
         }
 
         public void ChangePreviousPosition(float xPos, float yPos)
@@ -80,30 +87,43 @@ namespace MyGame.Model
         }
 
         public Rectangle? Animate(int heightImage, int widthImage)
-        {
-            if (timer % 5 == 0)
-                ImagePos = Animation.AnimateObject(Width, Height,
-                    widthImage, heightImage, ImagePos, Pos - PrevPos);
-            if (timer <= 0)
+        { 
+            if (AnimationTimer == 0)
             {
-                MayDestroy();
-                timer = 25;
+                ImagePos = Animation.AnimateObject(Width, Height,
+                    widthImage, heightImage, ImagePos, Pos - PrevPos); 
             }
-            timer -= 1;
+            UpdateAnimationTimers();
             return new Rectangle((int)ImagePos.X, (int)ImagePos.Y, Width, Height);
         }
 
-        private void MayDestroy()
+        private void CanDestroy()
         {
-            DestroyPermission = true;
+            if (DestructionTimer == 0)
+                DestroyPermission = true;
+        }
+
+        private void UpdateAnimationTimers()
+        {
+            if (AnimationTimer != 0)
+                AnimationTimer -= 1;
+            else
+                AnimationTimer = 2;
+        }
+
+        private void UpdateDestructionTimer()
+        {
+            DestructionTimer -= 1;
         }
 
         public void Update()
         {
             if (Direction == IGameplayModel.Direction.left)
-                Move(-4, 0);
+                Move(-8, 0);
             else if (Direction == IGameplayModel.Direction.right)
-                Move(4, 0);
+                Move(8, 0);
+            CanDestroy();
+            UpdateDestructionTimer();
         }
     }
 }

@@ -1,61 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 using MyGame.View;
 
 namespace MyGame.Model
 {
-    public class MainCharacter : IObject, ISolid, IGravity, IAnimation
+    public class PlayerHorisontalAttack : IObject, IAnimation
     {
         public int ImageId { get; set; }
-
         public Vector2 Pos { get; private set; }
         public Vector2 PrevPos { get; private set; }
+        public Vector2 Speed { get; private set; }
         public int Width { get; }
         public int Height { get; }
 
+        public int AnimationTimer { get; private set; }
+        public Vector2 ImagePos { get; private set; }
+
+        public bool DestroyPermission { get; private set; }
+
         public RectangleCollider Collider { get; private set; }
 
-        public Vector2 Speed { get; private set; }
+        public IGameplayModel.Direction Direction { get; private set; }
+        public int DestructionTimer { get; private set; }
 
-        //public bool IsGrounded { get; private set; }
-        public bool IsGrounded { get; set; }
-        public float JumpForce { get; private set; }
-        public float Gravity { get; }
-        public float VerticalSpeed { get; private set; }
 
-        public Vector2 ImagePos { get; private set; }
-        public int AnimationTimer { get; private set; }
 
-        public MainCharacter(Vector2 position, int width, int height)
+        public PlayerHorisontalAttack(Vector2 position, int width, int height, IGameplayModel.Direction direction)
         {
             AnimationTimer = 0;
             ImagePos = new Vector2();
-            PrevPos = position;
+            PrevPos = Pos;
             Pos = position;
             Width = width;
             Height = height;
+            DestroyPermission = false;
             Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
                 width, height);
-            JumpForce = 15f;
-            Gravity = 0.5f;
-            VerticalSpeed = 0f;
-            IsGrounded = false;
-        }
-
-        public void JumpAttempt()
-        {
-            if (IsGrounded)
-            {
-                VerticalSpeed = -JumpForce;
-                IsGrounded = false;
-            }
+            Direction = direction;
+            DestructionTimer = 16;
+            ImagePos = new Vector2(int.MinValue, int.MinValue);
         }
 
         public void MoveCollider()
@@ -97,47 +87,50 @@ namespace MyGame.Model
                 ChangeSpeed(-5, ySpeed);
         }
 
-        public void UpdateGravity()
+        public Rectangle? Animate(int heightImage, int widthImage)
         {
-            if (!IsGrounded)
+            if (AnimationTimer == 0)
             {
-                VerticalSpeed += Gravity;
-                ChangeSpeed(Speed.X, VerticalSpeed);
-            }
-            else
-            {
-                VerticalSpeed = 0;
-            }
-        }
-
-        public void PushTop()
-        {
-            VerticalSpeed = 0;
-        }
-
-        public Rectangle? Animate(int widthImage, int heightImage)
-        {
-            if (AnimationTimer <= 0)
-            {
-                AnimationTimer = 5;
                 ImagePos = Animation.AnimateObject(Width, Height,
                     widthImage, heightImage, ImagePos, Pos - PrevPos);
             }
-            AnimationTimer -= 1;
+            UpdateAnimationTimers();
             return new Rectangle((int)ImagePos.X, (int)ImagePos.Y, Width, Height);
         }
 
+        private void CanDestroy()
+        {
+            if (DestructionTimer == 0)
+                DestroyPermission = true;
+        }
+
+        private void UpdateAnimationTimers()
+        {
+            if (AnimationTimer != 0)
+                AnimationTimer -= 1;
+            else
+                AnimationTimer = 4;
+        }
+
+        private void UpdateDestructionTimer()
+        {
+            DestructionTimer -= 1;
+        }
 
         public void Update()
         {
-            Move(Speed.X, Speed.Y);
-            if (Speed.X != 0)
-            {
-                if (Speed.X < -1e-3)
-                    ChangeSpeed(Speed.X + 0.2f, Speed.Y);
-                if (Speed.X > 1e-3)
-                    ChangeSpeed(Speed.X - 0.2f, Speed.Y);
-            }
+            if (Direction == IGameplayModel.Direction.left)
+                if (DestructionTimer >= 8)
+                    Move(-32, 0);
+                else
+                    Move(32, 0);
+            else if (Direction == IGameplayModel.Direction.right)
+                if (DestructionTimer >= 8)
+                    Move(32, 0);
+                else
+                    Move(-32, 0);
+            CanDestroy();
+            UpdateDestructionTimer();
         }
     }
 }
