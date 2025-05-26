@@ -61,7 +61,7 @@ namespace MyGame.Model
             }
         }
 
-        public void MoveCollider(Vector2 newPosition)
+        public void MoveCollider()
         {
             Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
                 Width, Height);
@@ -71,14 +71,14 @@ namespace MyGame.Model
         {
             ChangePreviousPosition(Pos.X, Pos.Y);
             Pos += new Vector2(xMove, yMove);
-            MoveCollider(Pos);
+            MoveCollider();
         }
 
         public void ChangePosition(float xPos, float yPos)
         {
             ChangePreviousPosition(Pos.X, Pos.Y);
             Pos = new Vector2(xPos, yPos);
-            MoveCollider(Pos);
+            MoveCollider();
         }
 
         public void ChangePreviousPosition(float xPos, float yPos)
@@ -138,11 +138,9 @@ namespace MyGame.Model
         public void Update()
         {
             ChangeSpeed();
-            Pos += Speed;
-            MoveCollider(Pos);
+            Move(Speed.X, Speed.Y);
+            MoveCollider();
         }
-
-
 
         public void ChangeDirection(Vector2 playerPos)
         {

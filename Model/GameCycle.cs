@@ -23,10 +23,8 @@ namespace MyGame.Model
         private int CurrentId;
         private char[,] Map = new char[13, 9];
         private readonly int TileSize = 120;
-
         private int AttackId;
 
-        private IGameplayModel.Direction Direction = IGameplayModel.Direction.None;
         public void Initialize()
         {
             Objects = new Dictionary<int, IObject>();
@@ -159,24 +157,48 @@ namespace MyGame.Model
                 {
                     if (gravityObject.Value is Enemy enemy)
                     {
-                        var playerAttack = Objects[AttackId] as PlayerAttack;
-                        if (RectangleCollider.IsCollided(playerAttack.Collider, enemy.Collider))
+                        if (Objects[AttackId] is PlayerVerticalAttack)
                         {
-                            Objects.Remove(gravityObject.Key);
-                            GravityObjects.Remove(gravityObject.Key);
-                            SolidObjects.Remove(gravityObject.Key);
+                            var playerAttack = Objects[AttackId] as PlayerVerticalAttack;
+                            if (RectangleCollider.IsCollided(playerAttack.Collider, enemy.Collider))
+                            {
+                                Objects.Remove(gravityObject.Key);
+                                GravityObjects.Remove(gravityObject.Key);
+                                SolidObjects.Remove(gravityObject.Key);
+                            }
                         }
+                        else
+                        {
+                            var playerAttack = Objects[AttackId] as PlayerHorisontalAttack;
+                            if (RectangleCollider.IsCollided(playerAttack.Collider, enemy.Collider))
+                            {
+                                Objects.Remove(gravityObject.Key);
+                                GravityObjects.Remove(gravityObject.Key);
+                                SolidObjects.Remove(gravityObject.Key);
+                            }
+                        }
+                        
                     }
                 }
             }
 
             if (Objects.ContainsKey(AttackId))
             {
-                var playerAttack = Objects[AttackId] as PlayerAttack;
-                if (playerAttack.DestroyPermission)
+                if (Objects[AttackId] is PlayerVerticalAttack)
                 {
-                    Objects.Remove(AttackId);
-
+                    var playerAttack = Objects[AttackId] as PlayerVerticalAttack;
+                    if (playerAttack.DestroyPermission)
+                    {
+                        Objects.Remove(AttackId);
+                    }
+                }
+                else
+                {
+                    var playerAttack = Objects[AttackId] as PlayerHorisontalAttack;
+                    if (playerAttack.DestroyPermission)
+                    {
+                        Objects.Remove(AttackId);
+                    }
                 }
             }
 
@@ -196,75 +218,14 @@ namespace MyGame.Model
             }
         }
 
-        public void ControlMainCharacter(ControlsEventArgs e)
+        public void ControlPlayer(ControlsEventArgs e)
         {
-            if (e.direction != IGameplayModel.Direction.None && e.direction != IGameplayModel.Direction.up)
-                Direction = e.direction;
-            if (e.MouseLeftBottomState == IGameplayModel.MouseClick.pressed)
-            {
-                PlayerAttack(Direction);
-            }
-            ChangePlayerSpeed(e.direction);
+            var PCAId = PlayerControl.BeginPlayerControl(Objects, PlayerId, CurrentId, AttackId, e);
+            PlayerId = PCAId[0];
+            CurrentId = PCAId[1];
+            AttackId = PCAId[2];
         }
 
-        public void PlayerAttack(IGameplayModel.Direction direction)
-        {
-            MainCharacter player = Objects[PlayerId] as MainCharacter;
-            
-            if (direction == IGameplayModel.Direction.right || direction == IGameplayModel.Direction.rightUp)
-            {
-                Objects.Add(CurrentId,Factory.CreatePlayerAttack(
-                    player.Pos.X + player.Width, player.Pos.Y, IGameplayModel.Direction.right));
-            }
-            else if (direction == IGameplayModel.Direction.left || direction == IGameplayModel.Direction.leftUp)
-            {
-                Objects.Add(CurrentId, Factory.CreatePlayerAttack(
-                    player.Pos.X - player.Width, player.Pos.Y, IGameplayModel.Direction.left));
-            }
-            AttackId = CurrentId;
-            CurrentId++;
-        }
 
-        public void ChangePlayerSpeed(IGameplayModel.Direction direction)
-        {
-            MainCharacter player = Objects[PlayerId] as MainCharacter;
-            switch (direction)
-            {
-                case IGameplayModel.Direction.right:
-                    {
-                        if (!CollisionCalculater.CheckRightSide(player))
-                            player.SpeedUp(1, 0);
-                        break;
-                    }
-                case IGameplayModel.Direction.left:
-                    {
-                        if (!CollisionCalculater.CheckLeftSide(player))
-                            player.SpeedUp(-1, 0);
-                        break;
-                    }
-                case IGameplayModel.Direction.up:
-                    {
-                        if (!CollisionCalculater.CheckTop(player))
-                            player.JumpAttempt();
-                        break;
-                    }
-                case IGameplayModel.Direction.leftUp:
-                    {
-                        if (!CollisionCalculater.CheckLeftSide(player))
-                            player.SpeedUp(-1, 0);
-                        if (!CollisionCalculater.CheckTop(player))
-                            player.JumpAttempt();
-                        break;
-                    }
-                case IGameplayModel.Direction.rightUp:
-                    {
-                        if (!CollisionCalculater.CheckRightSide(player))
-                            player.SpeedUp(1, 0);
-                        if (!CollisionCalculater.CheckTop(player))
-                            player.JumpAttempt();
-                        break;
-                    }
-            }
-        }
     }
 }

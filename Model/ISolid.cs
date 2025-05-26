@@ -12,6 +12,6 @@ namespace MyGame.Model
     public interface ISolid : IObject
     {
         RectangleCollider Collider { get; }
-        void MoveCollider(Vector2 newPosition);
+        void MoveCollider();
     }
 }

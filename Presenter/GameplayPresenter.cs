@@ -30,7 +30,7 @@ namespace MyGame.Presenter
 
         private void ViewModelMovePlayer(object sender, ControlsEventArgs e)
         {
-            gameplayModel.ControlMainCharacter(e);
+            gameplayModel.ControlPlayer(e);
         }
 
         private void ModelViewUpdate(object sender, GameplayEventArgs e)
