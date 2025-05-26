@@ -31,11 +31,11 @@ namespace MyGame.Model
         public float VerticalSpeed { get; private set; }
 
         public Vector2 ImagePos { get; private set; }
-        public int AnimationTimer { get; private set; }
+        public int timer { get; private set; }
 
         public MainCharacter(Vector2 position, int width, int height)
         {
-            AnimationTimer = 0;
+            timer = 0;
             ImagePos = new Vector2();
             PrevPos = position;
             Pos = position;
@@ -58,7 +58,7 @@ namespace MyGame.Model
             }
         }
 
-        public void MoveCollider()
+        public void MoveCollider(Vector2 newPosition)
         {
             Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
                 Width, Height);
@@ -68,14 +68,14 @@ namespace MyGame.Model
         {
             ChangePreviousPosition(Pos.X, Pos.Y);
             Pos += new Vector2(xMove, yMove);
-            MoveCollider();
+            MoveCollider(Pos);
         }
 
         public void ChangePosition(float xPos, float yPos)
         {
             ChangePreviousPosition(Pos.X, Pos.Y);
             Pos = new Vector2(xPos, yPos);
-            MoveCollider();
+            MoveCollider(Pos);
         }
 
         public void ChangePreviousPosition(float xPos, float yPos)
@@ -108,6 +108,7 @@ namespace MyGame.Model
             {
                 VerticalSpeed = 0;
             }
+            //IsGrounded = CollisionCalculater.CheckIfGrounded(this);
         }
 
         public void PushTop()
@@ -117,13 +118,13 @@ namespace MyGame.Model
 
         public Rectangle? Animate(int widthImage, int heightImage)
         {
-            if (AnimationTimer <= 0)
+            if (timer <= 0)
             {
-                AnimationTimer = 5;
+                timer = 5;
                 ImagePos = Animation.AnimateObject(Width, Height,
                     widthImage, heightImage, ImagePos, Pos - PrevPos);
             }
-            AnimationTimer -= 1;
+            timer -= 1;
             return new Rectangle((int)ImagePos.X, (int)ImagePos.Y, Width, Height);
         }
 

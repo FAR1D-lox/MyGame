@@ -49,18 +49,6 @@
 /processorParam:TextureFormat=Color
 /build:PlayerFrames.png
 
-#begin SideAttackAnimation.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:SideAttackAnimation.png
-
 #begin SplashFrames.png
 /importer:TextureImporter
 /processor:TextureProcessor

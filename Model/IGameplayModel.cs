@@ -17,7 +17,7 @@ namespace MyGame.Model
         Dictionary<int, IObject> Objects { get; set; }
         event EventHandler<GameplayEventArgs> Updated;
         void Update(GameTime gameTime);
-        void ControlPlayer(ControlsEventArgs e);
+        void ControlMainCharacter(ControlsEventArgs e);
         void Initialize();
         
         public enum MouseClick : byte

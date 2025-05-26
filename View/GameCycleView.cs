@@ -59,8 +59,8 @@ namespace MyGame.View
             Textures.Add((byte)Factory.ObjectTypes.grass, Content.Load<Texture2D>("Grass"));
             Textures.Add((byte)Factory.ObjectTypes.dirt, Content.Load<Texture2D>("Dirt"));
             Textures.Add((byte)Factory.ObjectTypes.dirtNoSolid, Content.Load<Texture2D>("Dirt"));
-            Textures.Add((byte)Factory.ObjectTypes.playerVerticalAttack, Content.Load<Texture2D>("SplashFrames"));
-            Textures.Add((byte)Factory.ObjectTypes.playerHorisontalAttack, Content.Load<Texture2D>("SideAttackAnimation"));
+            Textures.Add((byte)Factory.ObjectTypes.playerAttack, Content.Load<Texture2D>("SplashFrames"));
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -76,7 +76,6 @@ namespace MyGame.View
                 mouseLeftBottomState = IGameplayModel.MouseClick.released;
                 timer -= 1;
             }
-            direction = IGameplayModel.Direction.None;
             var keys = Keyboard.GetState().GetPressedKeys();
             if (keys.Length > 0)
             {
@@ -143,7 +142,7 @@ namespace MyGame.View
                 (
                     this, new ControlsEventArgs
                     {
-                        direction = this.direction,
+                        direction = direction,
                         MouseLeftBottomState = mouseLeftBottomState
                     }
                 );
