@@ -10,10 +10,10 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MyGame.Model
 {
-    public interface IAnimation : IObject
+    public interface IAnimationObject : IObject
     {
         public int AnimationTimer { get; }
         public Vector2 ImagePos { get; }
-        public Rectangle? Animate(int heightImage, int widthImage);
+        public Rectangle? Animate(int widthImage);
     }
 }

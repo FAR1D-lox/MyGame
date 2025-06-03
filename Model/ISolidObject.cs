@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Model
 {
-    public interface ISolid : IObject
+    public interface ISolidObject : IObject
     {
         RectangleCollider Collider { get; }
         void MoveCollider();

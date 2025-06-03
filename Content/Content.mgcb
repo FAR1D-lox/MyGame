@@ -25,6 +25,30 @@
 /processorParam:TextureFormat=Color
 /build:Dirt.png
 
+#begin EnemyAttackFrames.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:EnemyAttackFrames.png
+
+#begin EnemyFrames.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:EnemyFrames.png
+
 #begin Grass.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -49,7 +73,7 @@
 /processorParam:TextureFormat=Color
 /build:PlayerFrames.png
 
-#begin SideAttackAnimation.png
+#begin SideAttackFrames.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -59,7 +83,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:SideAttackAnimation.png
+/build:SideAttackFrames.png
 
 #begin SplashFrames.png
 /importer:TextureImporter

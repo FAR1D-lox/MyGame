@@ -7,10 +7,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.View;
+using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
-    public class Enemy : IObject, ISolid, IGravity
+    public class Enemy : IObject, ISolidObject, IGravityObject, IAnimationObject, IAliveObject
     {
         public int ImageId { get; set; }
 
@@ -22,17 +23,24 @@ namespace MyGame.Model
         public RectangleCollider Collider { get; private set; }
 
         public Vector2 Speed { get; private set; }
-
-        //public bool IsGrounded { get; private set; }
         public bool IsGrounded { get; set; }
         public float JumpForce { get; private set; }
         public float Gravity { get; }
         public float VerticalSpeed { get; private set; }
         public int timer { get; set; }
-        private IGameplayModel.Direction Direction { get; set; }
+        public Vector2 ImagePos { get; private set; }
+        public int AnimationTimer { get; private set; }
+        public Direction Direction { get; private set; }
+        public int HP { get; set; }
+        public int ImmortalTimer { get; private set; }
+        public int AttackTimer { get; private set; }
+
+        private Direction AttackDirection;
 
         public Enemy(Vector2 position, int width, int height)
         {
+            AnimationTimer = 0;
+            ImagePos = new Vector2();
             timer = 0;
             PrevPos = position;
             Pos = position;
@@ -44,7 +52,11 @@ namespace MyGame.Model
             Gravity = 0.5f;
             VerticalSpeed = 0f;
             IsGrounded = false;
-            Direction = IGameplayModel.Direction.None;
+            Direction = None;
+            HP = 100;
+            ImmortalTimer = 0;
+            AttackTimer = 60;
+            AttackDirection = None;
         }
 
         public void JumpAttempt()
@@ -96,16 +108,16 @@ namespace MyGame.Model
             Speed += new Vector2(xSpeed, ySpeed);
         }
 
-        private void ChangeSpeed()
+        private void ChangeEnemySpeed()
         {
-            if (Direction == IGameplayModel.Direction.left)
+            if (Direction == left)
             {
                 if (!CollisionCalculater.CheckLeftSide(this))
                     ChangeSpeed(-2f, Speed.Y);
                 else
                     ChangeSpeed(0, Speed.Y);
             }
-            else if (Direction == IGameplayModel.Direction.right)
+            else if (Direction == right)
             {
                 if (!CollisionCalculater.CheckRightSide(this))
                     ChangeSpeed(2f, Speed.Y);
@@ -127,7 +139,6 @@ namespace MyGame.Model
             {
                 VerticalSpeed = 0;
             }
-            //IsGrounded = CollisionCalculater.CheckIfGrounded(this);
         }
 
         public void PushTop()
@@ -137,20 +148,88 @@ namespace MyGame.Model
 
         public void Update()
         {
-            ChangeSpeed();
+            if (AttackTimer <= 60 && AttackTimer > 40)
+            {
+                ChangeSpeed(0, Speed.Y);
+            }
+            else
+            {
+                ChangeEnemySpeed();
+            }
             Move(Speed.X, Speed.Y);
             MoveCollider();
+            UpdateAttackTimer();
+            UpdateImmortalTimer();
         }
+
 
         public void ChangeDirection(Vector2 playerPos)
         {
             var differentCoordinates = playerPos - Pos;
             if (differentCoordinates.X > 1e-1)
-                Direction = IGameplayModel.Direction.right;
+                Direction = right;
             else if (differentCoordinates.X < 1e-1)
-                Direction = IGameplayModel.Direction.left;
+                Direction = left;
             else
-                Direction = IGameplayModel.Direction.None;
+                Direction = None;
+        }
+
+        public bool TryAttack()
+        {
+            if (AttackTimer <= 0)
+            {
+                if (Pos.X - PrevPos.X < 0)
+                    AttackDirection = left;
+                else if (Pos.X - PrevPos.X > 0)
+                    AttackDirection = right;
+                AttackTimer = 60;
+                return true;
+            }
+            return false;
+        }
+
+        private void UpdateAttackTimer()
+        {
+            AttackTimer -= 1;
+        }
+
+        public void TryReduceHealthPoints(int damage)
+        {
+            if (ImmortalTimer <= 0)
+            {
+                HP -= damage;
+                ImmortalTimer = 20;
+            }
+
+        }
+
+        private void UpdateImmortalTimer()
+        {
+            ImmortalTimer -= 1;
+        }
+
+        public Rectangle? Animate(int widthImage)
+        {
+            if (AnimationTimer <= 0)
+            {
+                AnimationTimer = 5;
+                if (AttackTimer >= 40 && AttackTimer <= 60)
+                {
+                    ImagePos = Animation.AnimateObjectAttacking(Width, Height,
+                        widthImage, ImagePos, AttackDirection);
+                }
+                else
+                {
+                    ImagePos = Animation.AnimateObject(Width, Height,
+                        widthImage, ImagePos, Pos - PrevPos);
+                }
+                if (ImmortalTimer > 0)
+                {
+                    ImagePos = Animation.AnimateHurtObject(ImagePos, Height);
+                }
+            }
+            AnimationTimer -= 1;
+            return new Rectangle((int)ImagePos.X, (int)ImagePos.Y, Width, Height);
         }
     }
 }

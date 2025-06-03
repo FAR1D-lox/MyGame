@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.View;
+using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
@@ -17,19 +18,26 @@ namespace MyGame.Model
 
         public int PlayerId { get; set; }
         public Dictionary<int, IObject> Objects { get; set; }
-        public Dictionary<int, ISolid> SolidObjects { get; set; }
-        public Dictionary<int, IGravity> GravityObjects { get; set; }
+        public Dictionary<int, ISolidObject> SolidObjects { get; set; }
+        public Dictionary<int, IGravityObject> GravityObjects { get; set; }
+        public Dictionary<int, IAliveObject> AliveObjects { get; set; }
+        public Dictionary<int, IAttackObject> AttackObjects { get; set; }
 
         private int CurrentId;
         private char[,] Map = new char[13, 9];
         private readonly int TileSize = 120;
-        private int AttackId;
 
         public void Initialize()
         {
             Objects = new Dictionary<int, IObject>();
-            SolidObjects = new Dictionary<int, ISolid>();
-            GravityObjects = new Dictionary<int, IGravity>();
+            SolidObjects = new Dictionary<int, ISolidObject>();
+            GravityObjects = new Dictionary<int, IGravityObject>();
+            AliveObjects = new Dictionary<int, IAliveObject>();
+            AttackObjects = new Dictionary<int, IAttackObject>();
+            PlayerControl.ConnectPlayerControl(Objects, AttackObjects);
+            AttacksControl.ConnectAttacksControl(
+                AliveObjects, GravityObjects, SolidObjects, AttackObjects, Objects);
+            CollisionCalculater.ConnectCollisionCalculater(Objects, SolidObjects, GravityObjects);
             Map[0, 2] = 'G';
             Map[2, 3] = 'G';
             Map[0, 4] = 'P';
@@ -64,10 +72,12 @@ namespace MyGame.Model
                     {
                         IObject generatedObject = GenerateObject(Map[x, y], x, y);
                         Objects.Add(CurrentId, generatedObject);
-                        if (generatedObject is ISolid solidObj)
+                        if (generatedObject is ISolidObject solidObj)
                             SolidObjects.Add(CurrentId, solidObj);
-                        if (generatedObject is IGravity gravityObj)
+                        if (generatedObject is IGravityObject gravityObj)
                             GravityObjects.Add(CurrentId, gravityObj);
+                        if (generatedObject is IAliveObject aliveObj)
+                            AliveObjects.Add(CurrentId, aliveObj);
                         if (Map[x, y] == 'P' && !isPlacedPlayer)
                         {
                             PlayerId = CurrentId;
@@ -139,68 +149,29 @@ namespace MyGame.Model
         public void Update(GameTime gameTime)
         {
             Vector2 playerInitPos = Objects[PlayerId].Pos;
-            foreach (var gravityObject in GravityObjects.Values)
+            foreach (var aliveObject in AliveObjects.Values)
             {
-                if (gravityObject is Enemy enemy)
+                if (aliveObject is Enemy enemy)
                 {
                     enemy.JumpAttempt();
                     enemy.ChangeDirection(Objects[PlayerId].Pos);
+                    if (enemy.TryAttack())
+                    {
+                        IObject generatedObject;
+                        if (enemy.Direction == right)
+                            generatedObject = Factory.CreateEnemyAttack(enemy.Pos.X , enemy.Pos.Y - enemy.Height / 4, right);
+                        else
+                            generatedObject = Factory.CreateEnemyAttack(enemy.Pos.X - enemy.Width - 128, enemy.Pos.Y - enemy.Height / 2, left);
+                        Objects.Add(CurrentId, generatedObject);
+                        AttackObjects.Add(CurrentId, generatedObject as IAttackObject);
+                        CurrentId++;
+                    }
                 }
             }
 
             UpdateGravityObjectsSpeed();
-            CollisionCalculater.ActivateCollisionCalculater(Objects, SolidObjects, GravityObjects);
-
-            if (Objects.ContainsKey(AttackId))
-            {
-                foreach (var gravityObject in GravityObjects)
-                {
-                    if (gravityObject.Value is Enemy enemy)
-                    {
-                        if (Objects[AttackId] is PlayerVerticalAttack)
-                        {
-                            var playerAttack = Objects[AttackId] as PlayerVerticalAttack;
-                            if (RectangleCollider.IsCollided(playerAttack.Collider, enemy.Collider))
-                            {
-                                Objects.Remove(gravityObject.Key);
-                                GravityObjects.Remove(gravityObject.Key);
-                                SolidObjects.Remove(gravityObject.Key);
-                            }
-                        }
-                        else
-                        {
-                            var playerAttack = Objects[AttackId] as PlayerHorisontalAttack;
-                            if (RectangleCollider.IsCollided(playerAttack.Collider, enemy.Collider))
-                            {
-                                Objects.Remove(gravityObject.Key);
-                                GravityObjects.Remove(gravityObject.Key);
-                                SolidObjects.Remove(gravityObject.Key);
-                            }
-                        }
-                        
-                    }
-                }
-            }
-
-            if (Objects.ContainsKey(AttackId))
-            {
-                if (Objects[AttackId] is PlayerVerticalAttack)
-                {
-                    var playerAttack = Objects[AttackId] as PlayerVerticalAttack;
-                    if (playerAttack.DestroyPermission)
-                    {
-                        Objects.Remove(AttackId);
-                    }
-                }
-                else
-                {
-                    var playerAttack = Objects[AttackId] as PlayerHorisontalAttack;
-                    if (playerAttack.DestroyPermission)
-                    {
-                        Objects.Remove(AttackId);
-                    }
-                }
-            }
+            CollisionCalculater.ActivateCollisionCalculater();
+            AttacksControl.ActivateAttacksControl();
 
             Vector2 playerShift = Objects[PlayerId].Pos - playerInitPos;
             Updated.Invoke(this, new GameplayEventArgs
@@ -220,10 +191,9 @@ namespace MyGame.Model
 
         public void ControlPlayer(ControlsEventArgs e)
         {
-            var PCAId = PlayerControl.BeginPlayerControl(Objects, PlayerId, CurrentId, AttackId, e);
+            var PCAId = PlayerControl.BeginPlayerControl(PlayerId, CurrentId, e);
             PlayerId = PCAId[0];
             CurrentId = PCAId[1];
-            AttackId = PCAId[2];
         }
 
 

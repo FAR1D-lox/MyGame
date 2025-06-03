@@ -15,12 +15,13 @@ namespace MyGame.Model
             new Dictionary<string, (byte type, int width, int height)>()
             {
                 {"MainCharacter", ((byte) ObjectTypes.player, 34, 59) },
-                {"Enemy", ((byte) ObjectTypes.enemy, 64, 64) },
+                {"Enemy", ((byte) ObjectTypes.enemy, 37, 64) },
                 {"Grass", ((byte) ObjectTypes.grass, 120, 120) },
                 {"Dirt", ((byte) ObjectTypes.dirt, 120, 120) },
                 {"DirtNoSolid", ((byte) ObjectTypes.dirtNoSolid, 120, 120) },
                 {"PlayerVerticalAttack", ((byte) ObjectTypes.playerVerticalAttack, 16, 64) },
-                {"PlayerHorisontalAttack", ((byte) ObjectTypes.playerHorisontalAttack, 64, 16) }
+                {"PlayerHorisontalAttack", ((byte) ObjectTypes.playerHorisontalAttack, 64, 16) },
+                {"EnemyAttack", ((byte) ObjectTypes.enemyAttack, 128, 128) },
             };
         public static MainCharacter CreateMainCharacter(float x, float y, Vector2 speed)
         {
@@ -73,7 +74,7 @@ namespace MyGame.Model
             return dirtNoSolid;
         }
 
-        public static PlayerVerticalAttack CreatePlayerVecticalAttack(float x, float y, IGameplayModel.Direction direction)
+        public static PlayerVerticalAttack CreatePlayerVecticalAttack(float x, float y, Direction direction)
         {
             var playerVerticalAttack = new PlayerVerticalAttack(new Vector2(x, y),
                 _objects["PlayerVerticalAttack"].width,
@@ -83,7 +84,7 @@ namespace MyGame.Model
             return playerVerticalAttack;
         }
 
-        public static PlayerHorisontalAttack CreatePlayerHorisontalAttack(float x, float y, IGameplayModel.Direction direction)
+        public static PlayerHorisontalAttack CreatePlayerHorisontalAttack(float x, float y, Direction direction)
         {
             var playerHorisontalAttack = new PlayerHorisontalAttack(new Vector2(x, y),
                 _objects["PlayerHorisontalAttack"].width,
@@ -91,6 +92,16 @@ namespace MyGame.Model
                 direction);
             playerHorisontalAttack.ImageId = _objects["PlayerHorisontalAttack"].type;
             return playerHorisontalAttack;
+        }
+
+        public static EnemyAttack CreateEnemyAttack(float x, float y, Direction direction)
+        {
+            var enemyAttack = new EnemyAttack(new Vector2(x, y),
+                _objects["EnemyAttack"].width,
+                _objects["EnemyAttack"].height,
+                direction);
+            enemyAttack.ImageId = _objects["EnemyAttack"].type;
+            return enemyAttack;
         }
 
         public enum ObjectTypes : byte
@@ -101,7 +112,8 @@ namespace MyGame.Model
             dirt,
             dirtNoSolid,
             playerVerticalAttack,
-            playerHorisontalAttack
+            playerHorisontalAttack,
+            enemyAttack
         }
     }
 }

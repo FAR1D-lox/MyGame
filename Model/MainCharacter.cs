@@ -11,7 +11,7 @@ using MyGame.View;
 
 namespace MyGame.Model
 {
-    public class MainCharacter : IObject, ISolid, IGravity, IAnimation
+    public class MainCharacter : IObject, ISolidObject, IGravityObject, IAnimationObject, IAliveObject
     {
         public int ImageId { get; set; }
 
@@ -23,8 +23,6 @@ namespace MyGame.Model
         public RectangleCollider Collider { get; private set; }
 
         public Vector2 Speed { get; private set; }
-
-        //public bool IsGrounded { get; private set; }
         public bool IsGrounded { get; set; }
         public float JumpForce { get; private set; }
         public float Gravity { get; }
@@ -32,6 +30,8 @@ namespace MyGame.Model
 
         public Vector2 ImagePos { get; private set; }
         public int AnimationTimer { get; private set; }
+        public int HP { get; set; }
+        public int ImmortalTimer { get; private set; }
 
         public MainCharacter(Vector2 position, int width, int height)
         {
@@ -47,6 +47,8 @@ namespace MyGame.Model
             Gravity = 0.5f;
             VerticalSpeed = 0f;
             IsGrounded = false;
+            HP = 100;
+            ImmortalTimer = 0;
         }
 
         public void JumpAttempt()
@@ -115,18 +117,36 @@ namespace MyGame.Model
             VerticalSpeed = 0;
         }
 
-        public Rectangle? Animate(int widthImage, int heightImage)
+        public Rectangle? Animate(int widthImage)
         {
+
             if (AnimationTimer <= 0)
             {
                 AnimationTimer = 5;
                 ImagePos = Animation.AnimateObject(Width, Height,
-                    widthImage, heightImage, ImagePos, Pos - PrevPos);
+                    widthImage, ImagePos, Pos - PrevPos);
+                if (ImmortalTimer > 0)
+                {
+                    ImagePos = Animation.AnimateHurtObject(ImagePos, Height);
+                }
             }
             AnimationTimer -= 1;
             return new Rectangle((int)ImagePos.X, (int)ImagePos.Y, Width, Height);
         }
 
+        public void TryReduceHealthPoints(int damage)
+        {
+            if (ImmortalTimer <= 0)
+            {
+                HP -= damage;
+                ImmortalTimer = 20;
+            }
+        }
+
+        private void UpdateImmortalTimer()
+        {
+            ImmortalTimer -= 1;
+        }
 
         public void Update()
         {
@@ -138,6 +158,7 @@ namespace MyGame.Model
                 if (Speed.X > 1e-3)
                     ChangeSpeed(Speed.X - 0.2f, Speed.Y);
             }
+            UpdateImmortalTimer();
         }
     }
 }

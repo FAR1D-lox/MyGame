@@ -12,7 +12,7 @@ using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
-    public class PlayerVerticalAttack : IObject, IAnimationObject, IAttackObject
+    public class EnemyAttack : IObject, IAnimationObject, IAttackObject
     {
         public int ImageId { get; set; }
         public Vector2 Pos { get; private set; }
@@ -30,10 +30,10 @@ namespace MyGame.Model
 
         public Direction Direction { get; private set; }
         private int DestructionTimer { get; set; }
-        public int Damage {  get; private set; }
+        public int Damage { get; private set; }
 
 
-        public PlayerVerticalAttack(Vector2 position, int width, int height, Direction direction)
+        public EnemyAttack(Vector2 position, int width, int height, Direction direction)
         {
             AnimationTimer = 0;
             ImagePos = new Vector2();
@@ -45,7 +45,7 @@ namespace MyGame.Model
             Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
                 width, height);
             Direction = direction;
-            DestructionTimer = 16;
+            DestructionTimer = 20;
             Damage = 20;
         }
 
@@ -89,11 +89,19 @@ namespace MyGame.Model
         }
 
         public Rectangle? Animate(int widthImage)
-        { 
+        {
             if (AnimationTimer == 0)
             {
-                ImagePos = Animation.AnimateObject(Width, Height,
-                    widthImage, ImagePos, Pos - PrevPos); 
+                if (Direction == left)
+                {
+                    ImagePos = Animation.AnimateObject(Width, Height,
+                        widthImage, ImagePos, new Vector2(-1, 0));
+                }
+                else if (Direction == right)
+                {
+                    ImagePos = Animation.AnimateObject(Width, Height,
+                        widthImage, ImagePos, new Vector2(1, 0));
+                }
             }
             UpdateAnimationTimers();
             return new Rectangle((int)ImagePos.X, (int)ImagePos.Y, Width, Height);
@@ -110,7 +118,7 @@ namespace MyGame.Model
             if (AnimationTimer != 0)
                 AnimationTimer -= 1;
             else
-                AnimationTimer = 2;
+                AnimationTimer = 5;
         }
 
         private void UpdateDestructionTimer()
@@ -120,10 +128,6 @@ namespace MyGame.Model
 
         public void Update()
         {
-            if (Direction == left)
-                Move(-8, 0);
-            else if (Direction == right)
-                Move(8, 0);
             CanDestroy();
             UpdateDestructionTimer();
         }

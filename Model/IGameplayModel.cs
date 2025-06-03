@@ -15,32 +15,36 @@ namespace MyGame.Model
     {
         int PlayerId { get; set; }
         Dictionary<int, IObject> Objects { get; set; }
+        public Dictionary<int, ISolidObject> SolidObjects { get; set; }
+        public Dictionary<int, IGravityObject> GravityObjects { get; set; }
+        public Dictionary<int, IAliveObject> AliveObjects { get; set; }
+        public Dictionary<int, IAttackObject> AttackObjects { get; set; }
         event EventHandler<GameplayEventArgs> Updated;
         void Update(GameTime gameTime);
         void ControlPlayer(ControlsEventArgs e);
         void Initialize();
-        
-        public enum MouseClick : byte
-        {
-            released,
-            pressed
-        }
-
-        public enum Direction : byte
-        {
-            left,
-            right,
-            up,
-            down,
-            leftUp,
-            rightUp,
-            None
-        }
     }
 
     public class GameplayEventArgs : EventArgs
     {
         public Dictionary<int, IObject> Objects { get; set; }
         public Vector2 POVShift { get; set; }
+    }
+
+    public enum MouseClick : byte
+    {
+        released,
+        pressed
+    }
+
+    public enum Direction : byte
+    {
+        left,
+        right,
+        up,
+        down,
+        leftUp,
+        rightUp,
+        None
     }
 }

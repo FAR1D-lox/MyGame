@@ -13,15 +13,19 @@ namespace MyGame.Model
     public static class CollisionCalculater
     {
         static Dictionary<int, IObject> Objects = new();
-        static Dictionary<int, ISolid> SolidObjects = new();
-        static Dictionary<int, IGravity> GravityObjects = new();
+        static Dictionary<int, ISolidObject> SolidObjects = new();
+        static Dictionary<int, IGravityObject> GravityObjects = new();
 
-        public static void ActivateCollisionCalculater(Dictionary<int, IObject> objects,
-            Dictionary<int, ISolid> solidObjects, Dictionary<int, IGravity> gravityObjects)
+        public static void ConnectCollisionCalculater(Dictionary<int, IObject> objects,
+            Dictionary<int, ISolidObject> solidObjects, Dictionary<int, IGravityObject> gravityObjects)
         {
             Objects = objects;
             SolidObjects = solidObjects;
             GravityObjects = gravityObjects;
+        }
+
+        public static void ActivateCollisionCalculater()
+        {
             CalculateCollisionPreparation();
             CheckGroundedObjects();
         }
@@ -153,9 +157,9 @@ namespace MyGame.Model
                 Objects[obj.Id].Move(-oppositeDirection.X, -oppositeDirection.Y);
             }
         }
-        public static bool CheckIfGrounded(IGravity obj)
+        public static bool CheckIfGrounded(IGravityObject obj)
         {
-            var solidObj = obj as ISolid;
+            var solidObj = obj as ISolidObject;
             var feetCheck = new RectangleCollider(
                 (int)obj.Pos.X,
                 (int)obj.Pos.Y + obj.Height + 2,
@@ -172,9 +176,9 @@ namespace MyGame.Model
             return false;
         }
 
-        public static bool CheckTop(IGravity obj)
+        public static bool CheckTop(IGravityObject obj)
         {
-            var solidObj = obj as ISolid;
+            var solidObj = obj as ISolidObject;
             var upCheck = new RectangleCollider(
                 (int)obj.Pos.X,
                 (int)obj.Pos.Y - 2,
@@ -191,9 +195,9 @@ namespace MyGame.Model
             return false;
         }
 
-        public static bool CheckLeftSide(IGravity obj)
+        public static bool CheckLeftSide(IGravityObject obj)
         {
-            var solidObj = obj as ISolid;
+            var solidObj = obj as ISolidObject;
             var leftCheck = new RectangleCollider(
                 (int)obj.Pos.X - 2,
                 (int)obj.Pos.Y,
@@ -210,9 +214,9 @@ namespace MyGame.Model
             return false;
         }
 
-        public static bool CheckRightSide(IGravity obj)
+        public static bool CheckRightSide(IGravityObject obj)
         {
-            var solidObj = obj as ISolid;
+            var solidObj = obj as ISolidObject;
             var rightCheck = new RectangleCollider(
                 (int)obj.Pos.X + obj.Width + 2,
                 (int)obj.Pos.Y,

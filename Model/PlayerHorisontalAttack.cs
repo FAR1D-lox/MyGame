@@ -8,10 +8,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.View;
+using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
-    public class PlayerHorisontalAttack : IObject, IAnimation
+    public class PlayerHorisontalAttack : IObject, IAnimationObject, IAttackObject
     {
         public int ImageId { get; set; }
         public Vector2 Pos { get; private set; }
@@ -27,12 +28,13 @@ namespace MyGame.Model
 
         public RectangleCollider Collider { get; private set; }
 
-        public IGameplayModel.Direction Direction { get; private set; }
-        public int DestructionTimer { get; private set; }
+        public Direction Direction { get; private set; }
+        private int DestructionTimer { get; set; }
+        public int Damage { get; private set; }
 
 
 
-        public PlayerHorisontalAttack(Vector2 position, int width, int height, IGameplayModel.Direction direction)
+        public PlayerHorisontalAttack(Vector2 position, int width, int height, Direction direction)
         {
             AnimationTimer = 0;
             ImagePos = new Vector2();
@@ -46,6 +48,7 @@ namespace MyGame.Model
             Direction = direction;
             DestructionTimer = 16;
             ImagePos = new Vector2(int.MinValue, int.MinValue);
+            Damage = 15;
         }
 
         public void MoveCollider()
@@ -87,12 +90,12 @@ namespace MyGame.Model
                 ChangeSpeed(-5, ySpeed);
         }
 
-        public Rectangle? Animate(int heightImage, int widthImage)
+        public Rectangle? Animate(int widthImage)
         {
             if (AnimationTimer == 0)
             {
                 ImagePos = Animation.AnimateObject(Width, Height,
-                    widthImage, heightImage, ImagePos, Pos - PrevPos);
+                    widthImage, ImagePos, Pos - PrevPos);
             }
             UpdateAnimationTimers();
             return new Rectangle((int)ImagePos.X, (int)ImagePos.Y, Width, Height);
@@ -119,12 +122,12 @@ namespace MyGame.Model
 
         public void Update()
         {
-            if (Direction == IGameplayModel.Direction.left)
+            if (Direction == left)
                 if (DestructionTimer >= 8)
                     Move(-32, 0);
                 else
                     Move(32, 0);
-            else if (Direction == IGameplayModel.Direction.right)
+            else if (Direction == right)
                 if (DestructionTimer >= 8)
                     Move(32, 0);
                 else

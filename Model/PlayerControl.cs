@@ -9,94 +9,109 @@ using System.Threading.Tasks;
 using System.Threading;
 using MyGame.View;
 using MonoGame.Framework.Utilities;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using static MyGame.Model.Direction;
+using static MyGame.Model.MouseClick;
+
 
 
 namespace MyGame.Model
 {
     public static class PlayerControl
     {
-        private static Dictionary<int, IObject> Objects = new();
+        private static Dictionary<int, IObject> Objects;
+        private static Dictionary<int, IAttackObject> AttackObjects;
         private static int PlayerId;
         private static int CurrentId;
-        private static int AttackId;
-        private static IGameplayModel.Direction Direction;
-        private static IGameplayModel.Direction PrevDirection;
+        private static Direction Direction;
+        private static Direction PrevDirection;
 
-        public static List<int> BeginPlayerControl(Dictionary<int, IObject> objects, int playerId, int currentId, int attackId, ControlsEventArgs e)
+        public static void ConnectPlayerControl(Dictionary<int, IObject> objects,
+            Dictionary<int, IAttackObject> attackObjects)
         {
             Objects = objects;
-            PlayerId = playerId;
-            CurrentId = currentId;
-            AttackId = attackId;
-            aboba(e);
-            return new List<int> { PlayerId, CurrentId, AttackId };
+            AttackObjects = attackObjects;
         }
 
-        private static void aboba(ControlsEventArgs e)
+        public static List<int> BeginPlayerControl(int playerId, int currentId, ControlsEventArgs e)
         {
-            if (Direction != IGameplayModel.Direction.None && Direction != IGameplayModel.Direction.up)
+            PlayerId = playerId;
+            CurrentId = currentId;
+            TryAttackAndChangeSpeed(e);
+            return new List<int> { PlayerId, CurrentId };
+        }
+
+        private static void TryAttackAndChangeSpeed(ControlsEventArgs e)
+        {
+            if (Direction != None && Direction != up)
             PrevDirection = Direction;
-            Direction = e.direction;
-            if (e.MouseLeftBottomState == IGameplayModel.MouseClick.pressed)
+            Direction = e.Direction;
+            if (e.MouseLeftButtonState == pressed)
             {
                 PlayerAttack();
             }
-            ChangePlayerSpeed(e.direction);
+            ChangePlayerSpeed(e.Direction);
         }
 
         private static void PlayerAttack()
         {
             MainCharacter player = Objects[PlayerId] as MainCharacter;
+            IObject generatedObject = null;
 
-            if (Direction == IGameplayModel.Direction.right || Direction == IGameplayModel.Direction.rightUp)
+            if (Direction == right
+                || Direction == rightUp)
             {
-                Objects.Add(CurrentId, Factory.CreatePlayerHorisontalAttack(
-                    player.Pos.X + player.Width, player.Pos.Y + player.Height/2, IGameplayModel.Direction.right));
+                generatedObject = Factory.CreatePlayerHorisontalAttack(
+                    player.Pos.X + player.Width, player.Pos.Y + player.Height / 2, right);
             }
-            else if (Direction == IGameplayModel.Direction.left || Direction == IGameplayModel.Direction.leftUp)
+            else if (Direction == left
+                || Direction == leftUp)
             {
-                Objects.Add(CurrentId, Factory.CreatePlayerHorisontalAttack(
-                    player.Pos.X, player.Pos.Y + player.Height / 2, IGameplayModel.Direction.left));
+                generatedObject = Factory.CreatePlayerHorisontalAttack(
+                    player.Pos.X - 64, player.Pos.Y + player.Height / 2, left);
             }
-            else if (PrevDirection == IGameplayModel.Direction.right || PrevDirection == IGameplayModel.Direction.rightUp)
+            else if (PrevDirection == right
+                || PrevDirection == rightUp)
             {
-                Objects.Add(CurrentId, Factory.CreatePlayerVecticalAttack(
-                    player.Pos.X + player.Width, player.Pos.Y, IGameplayModel.Direction.right));
+                generatedObject = Factory.CreatePlayerVecticalAttack(
+                    player.Pos.X + player.Width, player.Pos.Y, right);
             }
-            else if (PrevDirection == IGameplayModel.Direction.left || PrevDirection == IGameplayModel.Direction.leftUp)
+            else if (PrevDirection == left
+                | PrevDirection == leftUp)
             {
-                Objects.Add(CurrentId, Factory.CreatePlayerVecticalAttack(
-                    player.Pos.X, player.Pos.Y, IGameplayModel.Direction.left));
+                generatedObject = Factory.CreatePlayerVecticalAttack(
+                    player.Pos.X - 16, player.Pos.Y, left);
             }
 
-            AttackId = CurrentId;
+            Objects.Add(CurrentId, generatedObject);
+            AttackObjects.Add(CurrentId, generatedObject as IAttackObject);
             CurrentId++;
         }
 
-        private static void ChangePlayerSpeed(IGameplayModel.Direction direction)
+        private static void ChangePlayerSpeed(Direction direction)
         {
             MainCharacter player = Objects[PlayerId] as MainCharacter;
             switch (direction)
             {
-                case IGameplayModel.Direction.right:
+                case right:
                     {
                         if (!CollisionCalculater.CheckRightSide(player))
                             player.SpeedUp(1, 0);
                         break;
                     }
-                case IGameplayModel.Direction.left:
+                case left:
                     {
                         if (!CollisionCalculater.CheckLeftSide(player))
                             player.SpeedUp(-1, 0);
                         break;
                     }
-                case IGameplayModel.Direction.up:
+                case up:
                     {
                         if (!CollisionCalculater.CheckTop(player))
                             player.JumpAttempt();
                         break;
                     }
-                case IGameplayModel.Direction.leftUp:
+                case leftUp:
                     {
                         if (!CollisionCalculater.CheckLeftSide(player))
                             player.SpeedUp(-1, 0);
@@ -104,7 +119,7 @@ namespace MyGame.Model
                             player.JumpAttempt();
                         break;
                     }
-                case IGameplayModel.Direction.rightUp:
+                case rightUp:
                     {
                         if (!CollisionCalculater.CheckRightSide(player))
                             player.SpeedUp(1, 0);

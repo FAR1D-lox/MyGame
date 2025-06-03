@@ -18,16 +18,14 @@ namespace MyGame.View
 
         private Vector2 VisualShift = Vector2.Zero;
 
-        private IGameplayModel.Direction direction;
-        private IGameplayModel.MouseClick mouseLeftBottomState;
+        private Direction Direction;
+        private MouseClick mouseLeftButtonState;
 
-        private int timer;
         public GameCycleView()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            timer = 0;
 
         }
 
@@ -55,111 +53,33 @@ namespace MyGame.View
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Textures.Add((byte)Factory.ObjectTypes.player, Content.Load<Texture2D>("PlayerFrames"));
-            Textures.Add((byte)Factory.ObjectTypes.enemy, Content.Load<Texture2D>("Square"));
+            Textures.Add((byte)Factory.ObjectTypes.enemy, Content.Load<Texture2D>("EnemyFrames"));
             Textures.Add((byte)Factory.ObjectTypes.grass, Content.Load<Texture2D>("Grass"));
             Textures.Add((byte)Factory.ObjectTypes.dirt, Content.Load<Texture2D>("Dirt"));
             Textures.Add((byte)Factory.ObjectTypes.dirtNoSolid, Content.Load<Texture2D>("Dirt"));
             Textures.Add((byte)Factory.ObjectTypes.playerVerticalAttack, Content.Load<Texture2D>("SplashFrames"));
-            Textures.Add((byte)Factory.ObjectTypes.playerHorisontalAttack, Content.Load<Texture2D>("SideAttackAnimation"));
+            Textures.Add((byte)Factory.ObjectTypes.playerHorisontalAttack, Content.Load<Texture2D>("SideAttackFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.enemyAttack, Content.Load<Texture2D>("EnemyAttackFrames"));
         }
 
         protected override void Update(GameTime gameTime)
         {
-            var mouseLeftClick = Mouse.GetState().LeftButton;
-            if (mouseLeftClick == ButtonState.Pressed && timer <= 0)
-            {
-                mouseLeftBottomState = IGameplayModel.MouseClick.pressed;
-                timer = 100;
-            }
+            mouseLeftButtonState = Controller.MouseController(Mouse.GetState().LeftButton);
+            
+            var keyBoardResult = Controller.KeyBoardController(Keyboard.GetState().GetPressedKeys());
+            if (keyBoardResult is Direction direction)
+                Direction = direction;
             else
-            {
-                mouseLeftBottomState = IGameplayModel.MouseClick.released;
-                timer -= 1;
-            }
-            direction = IGameplayModel.Direction.None;
-            var keys = Keyboard.GetState().GetPressedKeys();
-            if (keys.Length > 0)
-            {
-                var k = keys[0];
-                Keys k1 = new Keys();
-                if (keys.Length == 2)
-                {
-                    k1 = keys[1];
-                }
-                switch (k)
-                {
-                    case Keys.Escape:
-                        {
-                            Exit();
-                            break;
-                        }
-                    case Keys.Space:
-                        {
-                            if (k1 == Keys.A)
-                            {
-                                direction = IGameplayModel.Direction.leftUp;
-                            }
-                            else if (k1 == Keys.D)
-                            {
-                                direction = IGameplayModel.Direction.rightUp;
-                            }
-                            else
-                            {
-                                direction = IGameplayModel.Direction.up;
-                            }
-                            break;
-                        }
-                    case Keys.A:
-                        {
-                            if (k1 == Keys.Space)
-                            {
-                                direction = IGameplayModel.Direction.leftUp;
-                            }
-                            else
-                            {
-                                direction = IGameplayModel.Direction.left;
-                            }
-                            break;
-                        }
-                    case Keys.D:
-                        {
-                            if (k1 == Keys.Space)
-                            {
-                                direction = IGameplayModel.Direction.rightUp;
-                            }
-                            else
-                            {
-                                direction = IGameplayModel.Direction.right;
-                            }
-                            break;
-                        }
-                    case Keys.None:
-                        {
-                            direction = IGameplayModel.Direction.None;
-                            break;
-                        }
-                }
-                PlayerMoved.Invoke
-                (
-                    this, new ControlsEventArgs
-                    {
-                        direction = this.direction,
-                        MouseLeftBottomState = mouseLeftBottomState
-                    }
-                );
-            }
-            else
-            {
-                PlayerMoved.Invoke
-                    (
-                        this, new ControlsEventArgs
-                        {
-                            direction = IGameplayModel.Direction.None,
-                            MouseLeftBottomState = mouseLeftBottomState
-                        }
-                    );
-            }
+                Exit();
 
+            PlayerMoved.Invoke
+            (
+                this, new ControlsEventArgs
+                {
+                    Direction = Direction,
+                    MouseLeftButtonState = mouseLeftButtonState
+                }
+            );
 
             base.Update(gameTime);
             CycleFinished.Invoke(this, new GameTimeEventArgs(gameTime));
@@ -174,13 +94,13 @@ namespace MyGame.View
 
             foreach (var obj in Objects.Values)
             {
-                if (obj is IAnimation animatedObj)
+                if (obj is IAnimationObject animatedObj)
                 {
                     _spriteBatch.Draw
                     (
                         Textures[obj.ImageId],
                         obj.Pos - VisualShift,
-                        animatedObj.Animate(Textures[obj.ImageId].Width, Textures[obj.ImageId].Height),
+                        animatedObj.Animate(Textures[obj.ImageId].Width),
                         Color.White
                     );
                 }
