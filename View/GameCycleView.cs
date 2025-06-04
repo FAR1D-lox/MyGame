@@ -13,7 +13,7 @@ namespace MyGame.View
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Dictionary<int, IObject> Objects = new();
+        private Dictionary<int, IMapObject> Objects = new();
         private Dictionary<int, Texture2D> Textures = new();
 
         private Vector2 VisualShift = Vector2.Zero;
@@ -32,7 +32,7 @@ namespace MyGame.View
         public event EventHandler<GameTimeEventArgs> CycleFinished = delegate { };
         public event EventHandler<ControlsEventArgs> PlayerMoved = delegate { };
 
-        public void LoadGameCycleParameters(Dictionary<int, IObject> Objects, Vector2 POWShift)
+        public void LoadGameCycleParameters(Dictionary<int, IMapObject> Objects, Vector2 POWShift)
         {
             this.Objects = Objects;
             VisualShift += POWShift;

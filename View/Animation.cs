@@ -14,7 +14,7 @@ namespace MyGame.View
     public static class Animation
     {
         //0, 1, 2, 3, 4, 5, 6, 7 - что-то на подобии строчек. Высота каждой строчки идёт сверху вниз и равна высоте объекта.
-        public static Vector2 AnimateObject(int widthObj, int heightObj,
+        public static Vector2 AnimateObjectMove(int widthObj, int heightObj,
             int widthImage, Vector2 imagePos, Vector2 possitionDifference)
         {
             if (imagePos == new Vector2(int.MinValue, int.MinValue) ||

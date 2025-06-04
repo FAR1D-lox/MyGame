@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MyGame.Model
 {
-    public interface IAnimationObject : IObject
+    public interface IAnimationObject : IMapObject
     {
         public int AnimationTimer { get; }
         public Vector2 ImagePos { get; }

@@ -12,11 +12,11 @@ namespace MyGame.Model
 {
     public static class CollisionCalculater
     {
-        static Dictionary<int, IObject> Objects = new();
+        static Dictionary<int, IMapObject> Objects = new();
         static Dictionary<int, ISolidObject> SolidObjects = new();
         static Dictionary<int, IGravityObject> GravityObjects = new();
 
-        public static void ConnectCollisionCalculater(Dictionary<int, IObject> objects,
+        public static void ConnectCollisionCalculater(Dictionary<int, IMapObject> objects,
             Dictionary<int, ISolidObject> solidObjects, Dictionary<int, IGravityObject> gravityObjects)
         {
             Objects = objects;

@@ -14,7 +14,7 @@ namespace MyGame.Model
     public interface IGameplayModel
     {
         int PlayerId { get; set; }
-        Dictionary<int, IObject> Objects { get; set; }
+        Dictionary<int, IMapObject> Objects { get; set; }
         public Dictionary<int, ISolidObject> SolidObjects { get; set; }
         public Dictionary<int, IGravityObject> GravityObjects { get; set; }
         public Dictionary<int, IAliveObject> AliveObjects { get; set; }
@@ -27,7 +27,7 @@ namespace MyGame.Model
 
     public class GameplayEventArgs : EventArgs
     {
-        public Dictionary<int, IObject> Objects { get; set; }
+        public Dictionary<int, IMapObject> Objects { get; set; }
         public Vector2 POVShift { get; set; }
     }
 

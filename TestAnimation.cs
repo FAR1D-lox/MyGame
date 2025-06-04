@@ -22,7 +22,7 @@ namespace MyGame.Tests
             var expected = new Vector2(expectedX, expectedY);
 
             // Act
-            var actual = Animation.AnimateObject(width, height, widthImage, imagePos, different);
+            var actual = Animation.AnimateObjectMove(width, height, widthImage, imagePos, different);
 
             // Assert
             Assert.AreEqual(expected, actual);

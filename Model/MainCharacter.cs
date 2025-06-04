@@ -11,7 +11,7 @@ using MyGame.View;
 
 namespace MyGame.Model
 {
-    public class MainCharacter : IObject, ISolidObject, IGravityObject, IAnimationObject, IAliveObject
+    public class MainCharacter : IMapObject, ISolidObject, IGravityObject, IAnimationObject, IAliveObject
     {
         public int ImageId { get; set; }
 
@@ -123,7 +123,7 @@ namespace MyGame.Model
             if (AnimationTimer <= 0)
             {
                 AnimationTimer = 5;
-                ImagePos = Animation.AnimateObject(Width, Height,
+                ImagePos = Animation.AnimateObjectMove(Width, Height,
                     widthImage, ImagePos, Pos - PrevPos);
                 if (ImmortalTimer > 0)
                 {
@@ -139,7 +139,7 @@ namespace MyGame.Model
             if (ImmortalTimer <= 0)
             {
                 HP -= damage;
-                ImmortalTimer = 20;
+                ImmortalTimer = 30;
             }
         }
 

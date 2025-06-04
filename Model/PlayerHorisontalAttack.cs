@@ -12,7 +12,7 @@ using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
-    public class PlayerHorisontalAttack : IObject, IAnimationObject, IAttackObject
+    public class PlayerHorisontalAttack : IMapObject, IAnimationObject, IAttackObject
     {
         public int ImageId { get; set; }
         public Vector2 Pos { get; private set; }
@@ -94,7 +94,7 @@ namespace MyGame.Model
         {
             if (AnimationTimer == 0)
             {
-                ImagePos = Animation.AnimateObject(Width, Height,
+                ImagePos = Animation.AnimateObjectMove(Width, Height,
                     widthImage, ImagePos, Pos - PrevPos);
             }
             UpdateAnimationTimers();

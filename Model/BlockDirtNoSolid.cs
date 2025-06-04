@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MyGame.Model
 {
-    public class BlockDirtNoSolid : IObject
+    public class BlockDirtNoSolid : IMapObject
     {
         public int ImageId { get; set; }
         public Vector2 Pos { get; set; }

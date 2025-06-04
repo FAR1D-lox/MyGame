@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MyGame.Model
 {
-    public interface IAliveObject : IObject
+    public interface IAliveObject : IMapObject
     {
         int HP { get; set; }
         int ImmortalTimer { get; }

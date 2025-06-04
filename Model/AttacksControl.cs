@@ -13,14 +13,14 @@ namespace MyGame.Model
         private static Dictionary<int, IGravityObject> GravityObjects;
         private static Dictionary<int, ISolidObject> SolidObjects;
         private static Dictionary<int, IAttackObject> AttackObjects;
-        private static Dictionary<int, IObject> Objects;
+        private static Dictionary<int, IMapObject> Objects;
 
         public static void ConnectAttacksControl(
             Dictionary<int, IAliveObject> aliveObjects,
             Dictionary<int, IGravityObject> gravityObjects,
             Dictionary<int, ISolidObject> solidObjects,
             Dictionary<int, IAttackObject> attackObjects,
-            Dictionary<int, IObject> objects)
+            Dictionary<int, IMapObject> objects)
         {
             AliveObjects = aliveObjects;
             GravityObjects = gravityObjects;

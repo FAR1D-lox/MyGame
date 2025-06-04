@@ -9,9 +9,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Model
 {
-    public interface ISolidObject : IMapObject
+    public interface ILabel : IMapObject
     {
-        RectangleCollider Collider { get; }
-        void MoveCollider();
     }
 }

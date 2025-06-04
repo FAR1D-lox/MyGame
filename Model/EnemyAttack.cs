@@ -12,7 +12,7 @@ using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
-    public class EnemyAttack : IObject, IAnimationObject, IAttackObject
+    public class EnemyAttack : IMapObject, IAnimationObject, IAttackObject
     {
         public int ImageId { get; set; }
         public Vector2 Pos { get; private set; }
@@ -94,12 +94,12 @@ namespace MyGame.Model
             {
                 if (Direction == left)
                 {
-                    ImagePos = Animation.AnimateObject(Width, Height,
+                    ImagePos = Animation.AnimateObjectMove(Width, Height,
                         widthImage, ImagePos, new Vector2(-1, 0));
                 }
                 else if (Direction == right)
                 {
-                    ImagePos = Animation.AnimateObject(Width, Height,
+                    ImagePos = Animation.AnimateObjectMove(Width, Height,
                         widthImage, ImagePos, new Vector2(1, 0));
                 }
             }

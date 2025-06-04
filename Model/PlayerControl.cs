@@ -19,14 +19,14 @@ namespace MyGame.Model
 {
     public static class PlayerControl
     {
-        private static Dictionary<int, IObject> Objects;
+        private static Dictionary<int, IMapObject> Objects;
         private static Dictionary<int, IAttackObject> AttackObjects;
         private static int PlayerId;
         private static int CurrentId;
         private static Direction Direction;
         private static Direction PrevDirection;
 
-        public static void ConnectPlayerControl(Dictionary<int, IObject> objects,
+        public static void ConnectPlayerControl(Dictionary<int, IMapObject> objects,
             Dictionary<int, IAttackObject> attackObjects)
         {
             Objects = objects;
@@ -56,7 +56,7 @@ namespace MyGame.Model
         private static void PlayerAttack()
         {
             MainCharacter player = Objects[PlayerId] as MainCharacter;
-            IObject generatedObject = null;
+            IMapObject generatedObject = null;
 
             if (Direction == right
                 || Direction == rightUp)

@@ -14,7 +14,7 @@ namespace MyGame.View
     {
         event EventHandler<GameTimeEventArgs> CycleFinished;
         event EventHandler<ControlsEventArgs> PlayerMoved;
-        void LoadGameCycleParameters(Dictionary<int, IObject> Objects, Vector2 POVShift);
+        void LoadGameCycleParameters(Dictionary<int, IMapObject> Objects, Vector2 POVShift);
         void Run();
     }
 

@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MyGame.Model
 {
-    public interface IGravityObject : IObject
+    public interface IGravityObject : IMapObject
     {
         bool IsGrounded { get; set; }
         float JumpForce { get; }

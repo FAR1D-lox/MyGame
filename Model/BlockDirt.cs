@@ -10,7 +10,7 @@ using MyGame.View;
 
 namespace MyGame.Model
 {
-    public class BlockDirt : IObject, ISolidObject
+    public class BlockDirt : IMapObject, ISolidObject
     {
         public int ImageId { get; set; }
         public Vector2 Pos { get; private set; }

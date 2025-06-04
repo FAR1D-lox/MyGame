@@ -11,7 +11,7 @@ using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
-    public class Enemy : IObject, ISolidObject, IGravityObject, IAnimationObject, IAliveObject
+    public class Enemy : IMapObject, ISolidObject, IGravityObject, IAnimationObject, IAliveObject
     {
         public int ImageId { get; set; }
 
@@ -198,7 +198,7 @@ namespace MyGame.Model
             if (ImmortalTimer <= 0)
             {
                 HP -= damage;
-                ImmortalTimer = 20;
+                ImmortalTimer = 30;
             }
 
         }
@@ -220,7 +220,7 @@ namespace MyGame.Model
                 }
                 else
                 {
-                    ImagePos = Animation.AnimateObject(Width, Height,
+                    ImagePos = Animation.AnimateObjectMove(Width, Height,
                         widthImage, ImagePos, Pos - PrevPos);
                 }
                 if (ImmortalTimer > 0)
