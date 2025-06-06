@@ -12,9 +12,9 @@ using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
-    public class EnemyAttack : IMapObject, IAnimationObject, IAttackObject
+    public class EnemyAttack : IMapObject, IAnimationMapObject, IAttackObject
     {
-        public int ImageId { get; set; }
+        public int ImageId { get; }
         public Vector2 Pos { get; private set; }
         public Vector2 PrevPos { get; private set; }
         public Vector2 Speed { get; private set; }
@@ -33,8 +33,9 @@ namespace MyGame.Model
         public int Damage { get; private set; }
 
 
-        public EnemyAttack(Vector2 position, int width, int height, Direction direction)
+        public EnemyAttack(Vector2 position, int width, int height, int imageId, Direction direction)
         {
+            ImageId = imageId;
             AnimationTimer = 0;
             ImagePos = new Vector2();
             PrevPos = Pos;
@@ -88,7 +89,7 @@ namespace MyGame.Model
                 ChangeSpeed(-5, ySpeed);
         }
 
-        public Rectangle? Animate(int widthImage)
+        public Rectangle Animate(int widthImage)
         {
             if (AnimationTimer == 0)
             {

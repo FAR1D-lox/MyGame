@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace MyGame.Model
 {
-    public interface ILabel : IMapObject
+    public interface ILabel : IObject
     {
+
     }
 }

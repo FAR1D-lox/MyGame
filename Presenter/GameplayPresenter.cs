@@ -22,7 +22,7 @@ namespace MyGame.Presenter
             this.gameplayView = gameplayView;
 
             this.gameplayModel.Updated += ModelViewUpdate;
-            this.gameplayView.PlayerMoved += ViewModelMovePlayer;
+            this.gameplayView.PlayerActions += ViewModelMovePlayer;
             this.gameplayView.CycleFinished += ViewModelUpdate;
 
             this.gameplayModel.Initialize();
@@ -30,7 +30,7 @@ namespace MyGame.Presenter
 
         private void ViewModelMovePlayer(object sender, ControlsEventArgs e)
         {
-            gameplayModel.ControlPlayer(e);
+            gameplayModel.ControlPlayerGameplay(e);
         }
 
         private void ModelViewUpdate(object sender, GameplayEventArgs e)

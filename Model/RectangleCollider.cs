@@ -21,5 +21,10 @@ namespace MyGame.Model
         {
             return r1.Boundary.Intersects(r2.Boundary);
         }
+        public static bool IsCollided(RectangleCollider r1, Vector2 position)
+        {
+            var r2 = new RectangleCollider((int)position.X, (int)position.Y, 1, 1);
+            return r1.Boundary.Intersects(r2.Boundary);
+        }
     }
 }

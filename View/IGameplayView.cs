@@ -13,8 +13,8 @@ namespace MyGame.View
     public interface IGameplayView
     {
         event EventHandler<GameTimeEventArgs> CycleFinished;
-        event EventHandler<ControlsEventArgs> PlayerMoved;
-        void LoadGameCycleParameters(Dictionary<int, IMapObject> Objects, Vector2 POVShift);
+        event EventHandler<ControlsEventArgs> PlayerActions;
+        void LoadGameCycleParameters(Dictionary<int, IObject> Objects, Vector2 POVShift);
         void Run();
     }
 
@@ -22,6 +22,7 @@ namespace MyGame.View
     {
         public Direction Direction { get; set; }
         public MouseClick MouseLeftButtonState { get; set; }
+        public Vector2 MousePosition { get; set; }
     }
 
 }

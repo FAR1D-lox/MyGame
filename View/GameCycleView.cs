@@ -13,13 +13,14 @@ namespace MyGame.View
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Dictionary<int, IMapObject> Objects = new();
+        private Dictionary<int, IObject> Objects = new();
         private Dictionary<int, Texture2D> Textures = new();
 
         private Vector2 VisualShift = Vector2.Zero;
 
         private Direction Direction;
-        private MouseClick mouseLeftButtonState;
+        private MouseClick MouseLeftButtonState;
+        private Vector2 MousePosition;
 
         public GameCycleView()
         {
@@ -30,12 +31,17 @@ namespace MyGame.View
         }
 
         public event EventHandler<GameTimeEventArgs> CycleFinished = delegate { };
-        public event EventHandler<ControlsEventArgs> PlayerMoved = delegate { };
+        public event EventHandler<ControlsEventArgs> PlayerActions = delegate { };
 
-        public void LoadGameCycleParameters(Dictionary<int, IMapObject> Objects, Vector2 POWShift)
+        public void LoadGameCycleParameters(Dictionary<int, IObject> Objects, Vector2 POWShift)
         {
             this.Objects = Objects;
-            VisualShift += POWShift;
+            if (POWShift == new Vector2(float.MinValue, float.MinValue))
+                VisualShift = new Vector2(
+                    -_graphics.PreferredBackBufferWidth * 0.5f,
+                    -_graphics.PreferredBackBufferHeight * 0.2f);
+            else
+                VisualShift += POWShift;
         }
 
         protected override void Initialize()
@@ -60,11 +66,14 @@ namespace MyGame.View
             Textures.Add((byte)Factory.ObjectTypes.playerVerticalAttack, Content.Load<Texture2D>("SplashFrames"));
             Textures.Add((byte)Factory.ObjectTypes.playerHorisontalAttack, Content.Load<Texture2D>("SideAttackFrames"));
             Textures.Add((byte)Factory.ObjectTypes.enemyAttack, Content.Load<Texture2D>("EnemyAttackFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.loseWindow, Content.Load<Texture2D>("LoseWindow"));
+            Textures.Add((byte)Factory.ObjectTypes.restartButton, Content.Load<Texture2D>("RestartButtonFrames"));
         }
 
         protected override void Update(GameTime gameTime)
         {
-            mouseLeftButtonState = Controller.MouseController(Mouse.GetState().LeftButton);
+            MouseLeftButtonState = Controller.MouseController(Mouse.GetState().LeftButton);
+            MousePosition = Mouse.GetState().Position.ToVector2() + VisualShift;
             
             var keyBoardResult = Controller.KeyBoardController(Keyboard.GetState().GetPressedKeys());
             if (keyBoardResult is Direction direction)
@@ -72,12 +81,13 @@ namespace MyGame.View
             else
                 Exit();
 
-            PlayerMoved.Invoke
+            PlayerActions.Invoke
             (
                 this, new ControlsEventArgs
                 {
                     Direction = Direction,
-                    MouseLeftButtonState = mouseLeftButtonState
+                    MouseLeftButtonState = MouseLeftButtonState,
+                    MousePosition = MousePosition
                 }
             );
 

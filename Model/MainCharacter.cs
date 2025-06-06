@@ -8,12 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using MyGame.View;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MyGame.Model
 {
-    public class MainCharacter : IMapObject, ISolidObject, IGravityObject, IAnimationObject, IAliveObject
+    public class MainCharacter : IMapObject, ISolidObject, IGravityObject, IAnimationMapObject, IAliveObject
     {
-        public int ImageId { get; set; }
+        public int ImageId { get; }
 
         public Vector2 Pos { get; private set; }
         public Vector2 PrevPos { get; private set; }
@@ -33,8 +34,9 @@ namespace MyGame.Model
         public int HP { get; set; }
         public int ImmortalTimer { get; private set; }
 
-        public MainCharacter(Vector2 position, int width, int height)
+        public MainCharacter(Vector2 position, int width, int height, int imageId)
         {
+            ImageId = imageId;
             AnimationTimer = 0;
             ImagePos = new Vector2();
             PrevPos = position;
@@ -117,7 +119,7 @@ namespace MyGame.Model
             VerticalSpeed = 0;
         }
 
-        public Rectangle? Animate(int widthImage)
+        public Rectangle Animate(int widthImage)
         {
 
             if (AnimationTimer <= 0)

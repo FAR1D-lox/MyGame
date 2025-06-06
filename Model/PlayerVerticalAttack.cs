@@ -12,7 +12,7 @@ using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
-    public class PlayerVerticalAttack : IMapObject, IAnimationObject, IAttackObject
+    public class PlayerVerticalAttack : IMapObject, IAnimationMapObject, IAttackObject
     {
         public int ImageId { get; set; }
         public Vector2 Pos { get; private set; }
@@ -33,8 +33,9 @@ namespace MyGame.Model
         public int Damage {  get; private set; }
 
 
-        public PlayerVerticalAttack(Vector2 position, int width, int height, Direction direction)
+        public PlayerVerticalAttack(Vector2 position, int width, int height, int imageId, Direction direction)
         {
+            ImageId = imageId;
             AnimationTimer = 0;
             ImagePos = new Vector2();
             PrevPos = Pos;
@@ -88,7 +89,7 @@ namespace MyGame.Model
                 ChangeSpeed(-5, ySpeed);
         }
 
-        public Rectangle? Animate(int widthImage)
+        public Rectangle Animate(int widthImage)
         { 
             if (AnimationTimer == 0)
             {

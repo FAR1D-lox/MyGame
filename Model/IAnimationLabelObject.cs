@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
 namespace MyGame.Model
 {
-    public interface IAnimationObject
+    public interface IAnimationLabelObject : IAnimationObject
     {
-        public Rectangle Animate(int widthImage);
-        public Vector2 ImagePos { get; }
+        public bool CursorHover { get; }
     }
 }

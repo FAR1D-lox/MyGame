@@ -9,15 +9,9 @@ using System.Threading.Tasks;
 
 namespace MyGame.Model
 {
-    public interface IMapObject 
+    public interface IMapObject : IObject
     {
-            int ImageId { get; set; }
-            Vector2 Pos { get; }
-            public int Width { get; }
-            public int Height { get; }
-
-
-    Vector2 PrevPos { get; }
+        Vector2 PrevPos { get; }
         Vector2 Speed { get; }
 
         public void Move(float xMove, float yMove);

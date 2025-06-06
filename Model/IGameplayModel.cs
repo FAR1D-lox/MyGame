@@ -14,20 +14,21 @@ namespace MyGame.Model
     public interface IGameplayModel
     {
         int PlayerId { get; set; }
-        Dictionary<int, IMapObject> Objects { get; set; }
+        Dictionary<int, IObject> Objects { get; set; }
+        Dictionary<int, IMapObject> MapObjects { get; set; }
         public Dictionary<int, ISolidObject> SolidObjects { get; set; }
         public Dictionary<int, IGravityObject> GravityObjects { get; set; }
         public Dictionary<int, IAliveObject> AliveObjects { get; set; }
         public Dictionary<int, IAttackObject> AttackObjects { get; set; }
         event EventHandler<GameplayEventArgs> Updated;
         void Update(GameTime gameTime);
-        void ControlPlayer(ControlsEventArgs e);
+        void ControlPlayerGameplay(ControlsEventArgs e);
         void Initialize();
     }
 
     public class GameplayEventArgs : EventArgs
     {
-        public Dictionary<int, IMapObject> Objects { get; set; }
+        public Dictionary<int, IObject> Objects { get; set; }
         public Vector2 POVShift { get; set; }
     }
 

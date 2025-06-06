@@ -11,7 +11,7 @@ namespace MyGame.Model
 {
     public class BlockGrass : IMapObject, ISolidObject
     {
-        public int ImageId { get; set; }
+        public int ImageId { get; }
         public Vector2 Pos { get; private set; }
         public Vector2 PrevPos { get; set; }
         public Vector2 Speed { get; private set; }
@@ -19,8 +19,9 @@ namespace MyGame.Model
         public int Height { get; }
         public RectangleCollider Collider { get; set; }
 
-        public BlockGrass(Vector2 position, int width, int height)
+        public BlockGrass(Vector2 position, int width, int height, int imageId)
         {
+            ImageId = imageId;
             PrevPos = position;
             Pos = position;
             Width = width;

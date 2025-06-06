@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.View;
-using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
@@ -17,35 +16,50 @@ namespace MyGame.Model
         public event EventHandler<GameplayEventArgs> Updated;
 
         public int PlayerId { get; set; }
-        public Dictionary<int, IMapObject> Objects { get; set; }
+        public Dictionary<int, IObject> Objects { get; set; }
+        public Dictionary<int, IMapObject> MapObjects { get; set; }
         public Dictionary<int, ISolidObject> SolidObjects { get; set; }
         public Dictionary<int, IGravityObject> GravityObjects { get; set; }
         public Dictionary<int, IAliveObject> AliveObjects { get; set; }
         public Dictionary<int, IAttackObject> AttackObjects { get; set; }
+        public Dictionary<int, ILabel> LabelObjects { get; set; }
+        public Dictionary<int, IButton> ButtonObjects { get; set; }
 
+        private Vector2 MousePosition;
         private bool IsPlayerPlaced = false;
 
         private int CurrentId;
         private Vector2 PlayerShift;
+        private MouseClick MouseLeftButtonState;
 
         public void Initialize()
         {
-            Objects = new Dictionary<int, IMapObject>();
+            Objects = new Dictionary<int, IObject>();
+            MapObjects = new Dictionary<int, IMapObject>();
             SolidObjects = new Dictionary<int, ISolidObject>();
             GravityObjects = new Dictionary<int, IGravityObject>();
             AliveObjects = new Dictionary<int, IAliveObject>();
             AttackObjects = new Dictionary<int, IAttackObject>();
-            PlayerControl.ConnectPlayerControl(Objects, AttackObjects);
+            LabelObjects = new Dictionary<int, ILabel>();
+            ButtonObjects = new Dictionary<int, IButton>();
+
+
+            PlayerControl.ConnectPlayerControl(
+                Objects, MapObjects, AttackObjects);
             AttacksControl.ConnectAttacksControl(
-                AliveObjects, GravityObjects, SolidObjects, AttackObjects, Objects);
-            CollisionCalculater.ConnectCollisionCalculater(Objects, SolidObjects, GravityObjects);
-            MapCreator.ConnectMapCreator(Objects, SolidObjects, GravityObjects, AliveObjects);
+                Objects, AliveObjects, GravityObjects, SolidObjects, AttackObjects, MapObjects);
+            CollisionCalculater.ConnectCollisionCalculater(
+                Objects, MapObjects, SolidObjects, GravityObjects);
+            MapCreator.ConnectMapCreator(
+                Objects, MapObjects, SolidObjects, GravityObjects, AliveObjects);
 
             MapCreator.CreateFirstMap();
             CurrentId = MapCreator.CurrentId;
             PlayerId = MapCreator.PlayerId;
             IsPlayerPlaced = MapCreator.IsPlayerPlaced;
 
+            EnemyControl.ConnectEnemyControl(Objects, AliveObjects, AttackObjects, MapObjects, PlayerId);
+            
             Updated.Invoke(this, new GameplayEventArgs()
             {
                 Objects = Objects,
@@ -61,43 +75,26 @@ namespace MyGame.Model
         {
             if (IsPlayerPlaced)
             {
-                Vector2 playerInitPos = Objects[PlayerId].Pos;
-                foreach (var aliveObject in AliveObjects.Values)
-                {
-                    if (aliveObject is Enemy enemy)
-                    {
-                        enemy.JumpAttempt();
-                        enemy.ChangeDirection(Objects[PlayerId].Pos);
-                        if (enemy.TryAttack())
-                        {
-                            IMapObject generatedObject;
-                            if (enemy.Direction == right)
-                                generatedObject = Factory.CreateEnemyAttack(enemy.Pos.X + enemy.Width, enemy.Pos.Y - enemy.Height / 4, right);
-                            else
-                                generatedObject = Factory.CreateEnemyAttack(enemy.Pos.X - 128, enemy.Pos.Y - enemy.Height / 2, left);
-                            Objects.Add(CurrentId, generatedObject);
-                            AttackObjects.Add(CurrentId, generatedObject as IAttackObject);
-                            CurrentId++;
-                        }
-                    }
-                }
+                Vector2 playerInitPos = MapObjects[PlayerId].Pos;
+
+                EnemyControl.BeginEnemyControl(CurrentId);
+                CurrentId = EnemyControl.CurrentId;
 
                 UpdateGravityObjectsSpeed();
                 CollisionCalculater.ActivateCollisionCalculater();
                 AttacksControl.ActivateAttacksControl();
 
-                if (Objects.ContainsKey(PlayerId))
-                    PlayerShift = Objects[PlayerId].Pos - playerInitPos;
+                if (MapObjects.ContainsKey(PlayerId))
+                    PlayerShift = MapObjects[PlayerId].Pos - playerInitPos;
                 else
                 {
+                    OpenWindow(playerInitPos);
                     IsPlayerPlaced = false;
                     PlayerShift = new Vector2(0, 0);
                 }
             }
-            else
-            {
 
-            }
+            TryRestart();
 
             Updated.Invoke(this, new GameplayEventArgs
             {
@@ -106,7 +103,35 @@ namespace MyGame.Model
             });
         }
 
-        public void UpdateGravityObjectsSpeed()
+        private void OpenWindow(Vector2 playerInitPos)
+        {
+            ILabel generatedLabelObject;
+            generatedLabelObject = Factory.CreateLoseWindow(playerInitPos.X, playerInitPos.Y);
+            Objects.Add(CurrentId, generatedLabelObject);
+            LabelObjects.Add(CurrentId, generatedLabelObject);
+            CurrentId++;
+            IButton generatedButtonObject;
+            generatedButtonObject = Factory.CreateRestartButton(playerInitPos.X, playerInitPos.Y);
+            Objects.Add(CurrentId, generatedButtonObject);
+            LabelObjects.Add(CurrentId, generatedButtonObject);
+            ButtonObjects.Add(CurrentId, generatedButtonObject);
+            CurrentId++;
+        }
+
+        private void TryRestart()
+        {
+            foreach (var button in ButtonObjects.Values)
+            {
+                button.CheckCursorHover(MousePosition);
+                if (button.CursorHover && MouseLeftButtonState == MouseClick.pressed)
+                {
+                    Initialize();
+                    PlayerShift = new Vector2(float.MinValue, float.MinValue);
+                }
+            }
+        }
+
+        private void UpdateGravityObjectsSpeed()
         {
             foreach (var gravityObject in GravityObjects.Values)
             {
@@ -114,14 +139,16 @@ namespace MyGame.Model
             }
         }
 
-        public void ControlPlayer(ControlsEventArgs e)
+        public void ControlPlayerGameplay(ControlsEventArgs e)
         {
             if (IsPlayerPlaced)
             {
-                var PCAId = PlayerControl.BeginPlayerControl(PlayerId, CurrentId, e);
-                PlayerId = PCAId[0];
-                CurrentId = PCAId[1];
+                PlayerControl.BeginPlayerControl(PlayerId, CurrentId, e);
+                PlayerId = PlayerControl.PlayerId;
+                CurrentId = PlayerControl.CurrentId;
             }
+            MousePosition = e.MousePosition;
+            MouseLeftButtonState = e.MouseLeftButtonState;
         }
 
 

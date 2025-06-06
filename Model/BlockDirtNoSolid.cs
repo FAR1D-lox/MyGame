@@ -11,15 +11,16 @@ namespace MyGame.Model
 {
     public class BlockDirtNoSolid : IMapObject
     {
-        public int ImageId { get; set; }
+        public int ImageId { get; }
         public Vector2 Pos { get; set; }
         public Vector2 PrevPos { get; set; }
         public Vector2 Speed { get; private set; }
         public int Width { get; }
         public int Height { get; }
 
-        public BlockDirtNoSolid(Vector2 position, int width, int height)
+        public BlockDirtNoSolid(Vector2 position, int width, int height, int imageId)
         {
+            ImageId = imageId;
             PrevPos = position;
             Pos = position;
             Width = width;

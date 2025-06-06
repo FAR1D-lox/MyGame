@@ -62,7 +62,8 @@ namespace MyGame.View
             }
         }
 
-        public static Vector2 AnimateObjectAttacking(int widthObj, int heightObj, int widthImage, Vector2 imagePos, Direction direction)
+        public static Vector2 AnimateObjectAttacking(int widthObj, int heightObj,
+            int widthImage, Vector2 imagePos, Direction direction)
         {
             if (imagePos == new Vector2(int.MinValue, int.MinValue) ||
                 imagePos.Y == 0 || imagePos.Y == heightObj)
@@ -102,6 +103,14 @@ namespace MyGame.View
         public static Vector2 AnimateHurtObject(Vector2 imagePos, int heightObj)
         {
             return new Vector2(imagePos.X, imagePos.Y + heightObj * 4);
+        }
+
+        public static Vector2 AnimateButton(
+            int widthObj, bool cursorHover)
+        {
+            if (cursorHover)
+                return new Vector2(widthObj, 0);
+            return new Vector2(0, 0);
         }
     }
 }

@@ -19,26 +19,29 @@ namespace MyGame.Model
 {
     public static class PlayerControl
     {
-        private static Dictionary<int, IMapObject> Objects;
+        private static Dictionary<int, IObject> Objects;
+        private static Dictionary<int, IMapObject> MapObjects;
         private static Dictionary<int, IAttackObject> AttackObjects;
-        private static int PlayerId;
-        private static int CurrentId;
+        public static int PlayerId { get; set; }
+        public static int CurrentId { get; set; }
         private static Direction Direction;
         private static Direction PrevDirection;
 
-        public static void ConnectPlayerControl(Dictionary<int, IMapObject> objects,
+        public static void ConnectPlayerControl(
+            Dictionary<int, IObject> objects,
+            Dictionary<int, IMapObject> mapObjects,
             Dictionary<int, IAttackObject> attackObjects)
         {
+            MapObjects = mapObjects;
             Objects = objects;
             AttackObjects = attackObjects;
         }
 
-        public static List<int> BeginPlayerControl(int playerId, int currentId, ControlsEventArgs e)
+        public static void BeginPlayerControl(int playerId, int currentId, ControlsEventArgs e)
         {
             PlayerId = playerId;
             CurrentId = currentId;
             TryAttackAndChangeSpeed(e);
-            return new List<int> { PlayerId, CurrentId };
         }
 
         private static void TryAttackAndChangeSpeed(ControlsEventArgs e)
@@ -55,7 +58,7 @@ namespace MyGame.Model
 
         private static void PlayerAttack()
         {
-            MainCharacter player = Objects[PlayerId] as MainCharacter;
+            MainCharacter player = MapObjects[PlayerId] as MainCharacter;
             IMapObject generatedObject = null;
 
             if (Direction == right
@@ -84,13 +87,14 @@ namespace MyGame.Model
             }
 
             Objects.Add(CurrentId, generatedObject);
+            MapObjects.Add(CurrentId, generatedObject);
             AttackObjects.Add(CurrentId, generatedObject as IAttackObject);
             CurrentId++;
         }
 
         private static void ChangePlayerSpeed(Direction direction)
         {
-            MainCharacter player = Objects[PlayerId] as MainCharacter;
+            MainCharacter player = MapObjects[PlayerId] as MainCharacter;
             switch (direction)
             {
                 case right:

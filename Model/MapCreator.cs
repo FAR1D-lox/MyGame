@@ -13,10 +13,11 @@ namespace MyGame.Model
 {
     public static class MapCreator
     {
-        private static Dictionary<int, IMapObject> Objects { get; set; }
-        private static Dictionary<int, ISolidObject> SolidObjects { get; set; }
-        private static Dictionary<int, IGravityObject> GravityObjects { get; set; }
-        private static Dictionary<int, IAliveObject> AliveObjects { get; set; }
+        private static Dictionary<int, IObject> Objects;
+        private static Dictionary<int, IMapObject> MapObjects;
+        private static Dictionary<int, ISolidObject> SolidObjects;
+        private static Dictionary<int, IGravityObject> GravityObjects;
+        private static Dictionary<int, IAliveObject> AliveObjects;
 
         private static readonly int TileSize = 120;
         private static readonly char[,] Map = new char[13, 9];
@@ -25,15 +26,18 @@ namespace MyGame.Model
         public static bool IsPlayerPlaced { get; private set; }
         
         public static void ConnectMapCreator(
-            Dictionary<int, IMapObject> objects,
+            Dictionary<int, IObject> objects,
+            Dictionary<int, IMapObject> mapObjects,
             Dictionary<int, ISolidObject> solidObjects,
             Dictionary<int, IGravityObject> gravityObjects,
             Dictionary<int, IAliveObject> aliveObjects)
         {
             Objects = objects;
+            MapObjects = mapObjects;
             SolidObjects = solidObjects;
             GravityObjects = gravityObjects;
             AliveObjects = aliveObjects;
+            CurrentId = 1;
         }
 
         public static void CreateFirstMap()
@@ -65,7 +69,6 @@ namespace MyGame.Model
 
         private static void GenerateAllObjects()
         {
-            CurrentId = 1;
             for (int y = 0; y < Map.GetLength(1); y++)
             {
                 for (int x = 0; x < Map.GetLength(0); x++)
@@ -74,6 +77,7 @@ namespace MyGame.Model
                     {
                         IMapObject generatedObject = GenerateObject(Map[x, y], x, y);
                         Objects.Add(CurrentId, generatedObject);
+                        MapObjects.Add(CurrentId, generatedObject);
                         if (generatedObject is ISolidObject solidObj)
                             SolidObjects.Add(CurrentId, solidObj);
                         if (generatedObject is IGravityObject gravityObj)

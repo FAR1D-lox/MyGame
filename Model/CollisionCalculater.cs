@@ -12,14 +12,19 @@ namespace MyGame.Model
 {
     public static class CollisionCalculater
     {
-        static Dictionary<int, IMapObject> Objects = new();
-        static Dictionary<int, ISolidObject> SolidObjects = new();
-        static Dictionary<int, IGravityObject> GravityObjects = new();
+        private static Dictionary<int, IObject> Objects;
+        private static Dictionary<int, IMapObject> MapObjects;
+        private static Dictionary<int, ISolidObject> SolidObjects;
+        private static Dictionary<int, IGravityObject> GravityObjects;
 
-        public static void ConnectCollisionCalculater(Dictionary<int, IMapObject> objects,
-            Dictionary<int, ISolidObject> solidObjects, Dictionary<int, IGravityObject> gravityObjects)
+        public static void ConnectCollisionCalculater(
+            Dictionary<int, IObject> objects,
+            Dictionary<int, IMapObject> mapObjects,
+            Dictionary<int, ISolidObject> solidObjects,
+            Dictionary<int, IGravityObject> gravityObjects)
         {
             Objects = objects;
+            MapObjects = mapObjects;
             SolidObjects = solidObjects;
             GravityObjects = gravityObjects;
         }
@@ -41,9 +46,9 @@ namespace MyGame.Model
         {
             foreach (var Id in Objects.Keys)
             {
-                Vector2 initPos = Objects[Id].Pos;
-                Objects[Id].ChangePreviousPosition(initPos.X, initPos.Y);
-                Objects[Id].Update();
+                Vector2 initPos = MapObjects[Id].Pos;
+                MapObjects[Id].ChangePreviousPosition(initPos.X, initPos.Y);
+                MapObjects[Id].Update();
                 if (SolidObjects.ContainsKey(Id))
                     collisionObjects.Add(Id, initPos);
             }
@@ -150,11 +155,11 @@ namespace MyGame.Model
         private static void TryReverseMove((Vector2 initPos, int Id) obj,
             Vector2 oppositeDirection)
         {
-            if (obj.initPos != Objects[obj.Id].Pos)
+            if (obj.initPos != MapObjects[obj.Id].Pos)
             {
-                oppositeDirection = Objects[obj.Id].Pos - obj.initPos;
+                oppositeDirection = MapObjects[obj.Id].Pos - obj.initPos;
                 oppositeDirection.Normalize();
-                Objects[obj.Id].Move(-oppositeDirection.X, -oppositeDirection.Y);
+                MapObjects[obj.Id].Move(-oppositeDirection.X, -oppositeDirection.Y);
             }
         }
         public static bool CheckIfGrounded(IGravityObject obj)

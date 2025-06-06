@@ -11,9 +11,9 @@ using static MyGame.Model.Direction;
 
 namespace MyGame.Model
 {
-    public class Enemy : IMapObject, ISolidObject, IGravityObject, IAnimationObject, IAliveObject
+    public class Enemy : IMapObject, ISolidObject, IGravityObject, IAnimationMapObject, IAliveObject
     {
-        public int ImageId { get; set; }
+        public int ImageId { get; }
 
         public Vector2 Pos { get; private set; }
         public Vector2 PrevPos { get; private set; }
@@ -37,8 +37,9 @@ namespace MyGame.Model
 
         private Direction AttackDirection;
 
-        public Enemy(Vector2 position, int width, int height)
+        public Enemy(Vector2 position, int width, int height, int imageId)
         {
+            ImageId = imageId;
             AnimationTimer = 0;
             ImagePos = new Vector2();
             timer = 0;
@@ -208,7 +209,7 @@ namespace MyGame.Model
             ImmortalTimer -= 1;
         }
 
-        public Rectangle? Animate(int widthImage)
+        public Rectangle Animate(int widthImage)
         {
             if (AnimationTimer <= 0)
             {

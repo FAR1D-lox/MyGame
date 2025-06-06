@@ -9,24 +9,27 @@ namespace MyGame.Model
 {
     public static class AttacksControl
     {
+        private static Dictionary<int, IObject> Objects;
         private static Dictionary<int, IAliveObject> AliveObjects;
         private static Dictionary<int, IGravityObject> GravityObjects;
         private static Dictionary<int, ISolidObject> SolidObjects;
         private static Dictionary<int, IAttackObject> AttackObjects;
-        private static Dictionary<int, IMapObject> Objects;
+        private static Dictionary<int, IMapObject> MapObjects;
 
         public static void ConnectAttacksControl(
+            Dictionary<int, IObject> objects,
             Dictionary<int, IAliveObject> aliveObjects,
             Dictionary<int, IGravityObject> gravityObjects,
             Dictionary<int, ISolidObject> solidObjects,
             Dictionary<int, IAttackObject> attackObjects,
-            Dictionary<int, IMapObject> objects)
+            Dictionary<int, IMapObject> mapObjects)
         {
+            Objects = objects;
             AliveObjects = aliveObjects;
             GravityObjects = gravityObjects;
             SolidObjects = solidObjects;
             AttackObjects = attackObjects;
-            Objects = objects;
+            MapObjects = mapObjects;
         }
 
         public static void ActivateAttacksControl()
@@ -63,6 +66,7 @@ namespace MyGame.Model
                 if (AliveObjects[aliveObjectId].HP <= 0)
                 {
                     Objects.Remove(aliveObjectId);
+                    MapObjects.Remove(aliveObjectId);
                     AliveObjects.Remove(aliveObjectId);
                     if (GravityObjects.ContainsKey(aliveObjectId))
                         GravityObjects.Remove(aliveObjectId);
@@ -79,6 +83,7 @@ namespace MyGame.Model
                 if (AttackObjects[attackId].DestroyPermission)
                 {
                     Objects.Remove(attackId);
+                    MapObjects.Remove(attackId);
                     AttackObjects.Remove(attackId);
                 }
             }

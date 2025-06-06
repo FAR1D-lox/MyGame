@@ -63,7 +63,7 @@ namespace MyGame.View
         {
             if (mouseLeftClick == ButtonState.Pressed && ClickTimer <= 0)
             {
-                ClickTimer = 70;
+                ClickTimer = 35;
                 return pressed;
             }
             ClickTimer -= 1;
