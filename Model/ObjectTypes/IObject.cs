@@ -7,10 +7,13 @@ using Microsoft.Xna.Framework.Input;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Model
+namespace MyGame.Model.ObjectTypes
 {
-    public interface ILabel : IObject
+    public interface IObject
     {
-
+        int ImageId { get; }
+        Vector2 Pos { get; }
+        public int Width { get; }
+        public int Height { get; }
     }
 }

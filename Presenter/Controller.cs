@@ -4,17 +4,17 @@ using Microsoft.Xna.Framework.Input;
 using MyGame.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Timers;
 using static MyGame.Model.Direction;
 using static MyGame.Model.MouseClick;
 
-namespace MyGame.View
+namespace MyGame.Presenter
 {
     public static class Controller
     {
-        private static int ClickTimer = 0;
-        public static Direction? KeyBoardController(Keys[] keys)
+        public static Direction FindDirection(Keys[] keys)
         {
             if (keys.Length > 0)
             {
@@ -25,10 +25,6 @@ namespace MyGame.View
 
                 switch (k1)
                 {
-                    case Keys.Escape:
-                        {
-                            return null;
-                        }
                     case Keys.Space:
                         {
                             if (k2 == Keys.A)
@@ -58,15 +54,17 @@ namespace MyGame.View
             return None;
         }
 
+        public static bool IsPressedESC(Keys[] keys)
+        {
+            if (keys.Contains(Keys.Escape))
+                return true;
+            return false;
+        }
 
         public static MouseClick MouseController(ButtonState mouseLeftClick)
         {
-            if (mouseLeftClick == ButtonState.Pressed && ClickTimer <= 0)
-            {
-                ClickTimer = 35;
+            if (mouseLeftClick == ButtonState.Pressed)
                 return pressed;
-            }
-            ClickTimer -= 1;
             return released;
         }
     }

@@ -8,31 +8,29 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyGame.Model.ObjectTypes;
 
 namespace MyGame.Model
 {
     public static class MapCreator
     {
-        private static Dictionary<int, IObject> Objects;
         private static Dictionary<int, IMapObject> MapObjects;
         private static Dictionary<int, ISolidObject> SolidObjects;
         private static Dictionary<int, IGravityObject> GravityObjects;
         private static Dictionary<int, IAliveObject> AliveObjects;
 
         private static readonly int TileSize = 120;
-        private static readonly char[,] Map = new char[13, 9];
+        private static readonly char[,] Map = new char[13, 15];
         public static int CurrentId { get; private set; }
         public static int PlayerId { get; private set; }
         public static bool IsPlayerPlaced { get; private set; }
         
         public static void ConnectMapCreator(
-            Dictionary<int, IObject> objects,
             Dictionary<int, IMapObject> mapObjects,
             Dictionary<int, ISolidObject> solidObjects,
             Dictionary<int, IGravityObject> gravityObjects,
             Dictionary<int, IAliveObject> aliveObjects)
         {
-            Objects = objects;
             MapObjects = mapObjects;
             SolidObjects = solidObjects;
             GravityObjects = gravityObjects;
@@ -42,11 +40,12 @@ namespace MyGame.Model
 
         public static void CreateFirstMap()
         {
+            Map[0, 4] = 'P';
             Map[0, 2] = 'G';
             Map[2, 3] = 'G';
-            Map[0, 4] = 'P';
+            
             Map[1, 4] = 'G';
-            Map[4, 4] = 'E';
+            Map[4, 2] = 'E';
             Map[6, 2] = 'E';
             Map[8, 2] = 'E';
             Map[10, 2] = 'E';
@@ -59,10 +58,10 @@ namespace MyGame.Model
             {
                 for (int x = 1; x < Map.GetLength(0) - 1; x++)
                 {
-                    Map[x, y] = 'd';
+                    Map[x, y] = 's';
                 }
-                Map[0, y] = 'D';
-                Map[Map.GetLength(0) - 1, y] = 'D';
+                Map[0, y] = 'S';
+                Map[Map.GetLength(0) - 1, y] = 'S';
             }
             GenerateAllObjects();
         }
@@ -76,7 +75,6 @@ namespace MyGame.Model
                     if (Map[x, y] != '\0')
                     {
                         IMapObject generatedObject = GenerateObject(Map[x, y], x, y);
-                        Objects.Add(CurrentId, generatedObject);
                         MapObjects.Add(CurrentId, generatedObject);
                         if (generatedObject is ISolidObject solidObj)
                             SolidObjects.Add(CurrentId, solidObj);
@@ -124,16 +122,16 @@ namespace MyGame.Model
                     y + TileSize / 2);
             }
 
-            else if (sign == 'D')
+            else if (sign == 'S')
             {
-                generatedObject = Factory.CreateDirt(
+                generatedObject = Factory.CreateStone(
                     x + TileSize / 2,
                     y + TileSize / 2);
             }
 
-            else if (sign == 'd')
+            else if (sign == 's')
             {
-                generatedObject = Factory.CreateDirtNoSolid(
+                generatedObject = Factory.CreateStoneNoSolid(
                     x + TileSize / 2,
                     y + TileSize / 2);
             }

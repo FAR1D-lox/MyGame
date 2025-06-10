@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.Model;
+using MyGame.Model.ObjectTypes;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -13,13 +14,14 @@ namespace MyGame.View
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Dictionary<int, IObject> Objects = new();
+        private Dictionary<int, IMapObject> MapObjects = new();
+        private Dictionary<int, ILabel> LabelObjects = new();
+        private Dictionary<int, IButton> ButtonObjects = new();
         private Dictionary<int, Texture2D> Textures = new();
 
         private Vector2 VisualShift = Vector2.Zero;
 
-        private Direction Direction;
-        private MouseClick MouseLeftButtonState;
+        private ButtonState MouseLeftButtonState;
         private Vector2 MousePosition;
 
         public GameCycleView()
@@ -30,12 +32,14 @@ namespace MyGame.View
 
         }
 
-        public event EventHandler<GameTimeEventArgs> CycleFinished = delegate { };
-        public event EventHandler<ControlsEventArgs> PlayerActions = delegate { };
+        public event EventHandler CycleFinished = delegate { };
+        public event EventHandler<InputData> ControlInputStates = delegate { };
 
-        public void LoadGameCycleParameters(Dictionary<int, IObject> Objects, Vector2 POWShift)
+        public void LoadGameCycleParameters(Dictionary<int, IMapObject> MapObjects, Dictionary<int, ILabel> LabelObjects, Dictionary<int, IButton> ButtonObjects, Vector2 POWShift)
         {
-            this.Objects = Objects;
+            this.MapObjects = MapObjects;
+            this.LabelObjects = LabelObjects;
+            this.ButtonObjects = ButtonObjects;
             if (POWShift == new Vector2(float.MinValue, float.MinValue))
                 VisualShift = new Vector2(
                     -_graphics.PreferredBackBufferWidth * 0.5f,
@@ -61,68 +65,89 @@ namespace MyGame.View
             Textures.Add((byte)Factory.ObjectTypes.player, Content.Load<Texture2D>("PlayerFrames"));
             Textures.Add((byte)Factory.ObjectTypes.enemy, Content.Load<Texture2D>("EnemyFrames"));
             Textures.Add((byte)Factory.ObjectTypes.grass, Content.Load<Texture2D>("Grass"));
-            Textures.Add((byte)Factory.ObjectTypes.dirt, Content.Load<Texture2D>("Dirt"));
-            Textures.Add((byte)Factory.ObjectTypes.dirtNoSolid, Content.Load<Texture2D>("Dirt"));
+            Textures.Add((byte)Factory.ObjectTypes.stone, Content.Load<Texture2D>("Stone"));
+            Textures.Add((byte)Factory.ObjectTypes.stoneNoSolid, Content.Load<Texture2D>("Stone"));
             Textures.Add((byte)Factory.ObjectTypes.playerVerticalAttack, Content.Load<Texture2D>("SplashFrames"));
             Textures.Add((byte)Factory.ObjectTypes.playerHorisontalAttack, Content.Load<Texture2D>("SideAttackFrames"));
             Textures.Add((byte)Factory.ObjectTypes.enemyAttack, Content.Load<Texture2D>("EnemyAttackFrames"));
             Textures.Add((byte)Factory.ObjectTypes.loseWindow, Content.Load<Texture2D>("LoseWindow"));
             Textures.Add((byte)Factory.ObjectTypes.restartButton, Content.Load<Texture2D>("RestartButtonFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.continueButton, Content.Load<Texture2D>("ContinueButtonFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.exitToMenuButton, Content.Load<Texture2D>("ExitButtonFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.pauseButton, Content.Load<Texture2D>("PauseButtonFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.pauseWindow, Content.Load<Texture2D>("PauseWindow"));
         }
 
         protected override void Update(GameTime gameTime)
         {
-            MouseLeftButtonState = Controller.MouseController(Mouse.GetState().LeftButton);
+            MouseLeftButtonState = Mouse.GetState().LeftButton;
             MousePosition = Mouse.GetState().Position.ToVector2() + VisualShift;
             
-            var keyBoardResult = Controller.KeyBoardController(Keyboard.GetState().GetPressedKeys());
-            if (keyBoardResult is Direction direction)
-                Direction = direction;
-            else
-                Exit();
+            var keyBoardResult = Keyboard.GetState().GetPressedKeys();
 
-            PlayerActions.Invoke
+            ControlInputStates.Invoke
             (
-                this, new ControlsEventArgs
+                this, new InputData
                 {
-                    Direction = Direction,
+                    PressedKeys = keyBoardResult,
                     MouseLeftButtonState = MouseLeftButtonState,
                     MousePosition = MousePosition
                 }
             );
 
             base.Update(gameTime);
-            CycleFinished.Invoke(this, new GameTimeEventArgs(gameTime));
-
+            CycleFinished.Invoke(this, new EventArgs());
         }
-
+        
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Blue);
             base.Draw(gameTime);
             _spriteBatch.Begin();
 
-            foreach (var obj in Objects.Values)
+            foreach (var obj in MapObjects.Values)
             {
-                if (obj is IAnimationObject animatedObj)
+                if (obj is IMapObject)
                 {
-                    _spriteBatch.Draw
-                    (
-                        Textures[obj.ImageId],
-                        obj.Pos - VisualShift,
-                        animatedObj.Animate(Textures[obj.ImageId].Width),
-                        Color.White
-                    );
+                    if (obj is IAnimationMapObject animatedObj)
+                    {
+                        _spriteBatch.Draw
+                        (
+                            Textures[obj.ImageId],
+                            obj.Pos - VisualShift,
+                            animatedObj.Animate(Textures[obj.ImageId].Width),
+                            Color.White
+                        );
+                    }
+                    else
+                    {
+                        _spriteBatch.Draw
+                        (
+                            Textures[obj.ImageId],
+                            obj.Pos - VisualShift,
+                            Color.White
+                        );
+                    }
                 }
-                else
-                {
-                    _spriteBatch.Draw
-                    (
-                        Textures[obj.ImageId],
-                        obj.Pos - VisualShift,
-                        Color.White
-                    );
-                }
+            }
+            foreach (var obj in LabelObjects.Values)
+            {
+                _spriteBatch.Draw
+                (
+                    Textures[obj.ImageId],
+                    obj.Pos - VisualShift,
+                    Color.White
+                );
+            }
+            foreach (var obj in ButtonObjects.Values)
+            {
+                _spriteBatch.Draw
+                (
+                    Textures[obj.ImageId],
+                    obj.Pos - VisualShift,
+                    obj.Animate(Textures[obj.ImageId].Width),
+                    Color.White
+                );
             }
             _spriteBatch.End();
         }

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace MyGame.Model
+namespace MyGame.Model.ObjectTypes
 {
     public interface IGravityObject : IMapObject
     {

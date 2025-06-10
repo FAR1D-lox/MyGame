@@ -12,14 +12,14 @@ using MonoGame.Framework.Utilities;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using static MyGame.Model.Direction;
 using static MyGame.Model.MouseClick;
-
-
+using MyGame.Presenter;
+using MyGame.Model.ObjectTypes;
+using MyGame.Model.Objects.MapObjects;
 
 namespace MyGame.Model
 {
     public static class PlayerControl
     {
-        private static Dictionary<int, IObject> Objects;
         private static Dictionary<int, IMapObject> MapObjects;
         private static Dictionary<int, IAttackObject> AttackObjects;
         public static int PlayerId { get; set; }
@@ -28,26 +28,24 @@ namespace MyGame.Model
         private static Direction PrevDirection;
 
         public static void ConnectPlayerControl(
-            Dictionary<int, IObject> objects,
             Dictionary<int, IMapObject> mapObjects,
             Dictionary<int, IAttackObject> attackObjects)
         {
             MapObjects = mapObjects;
-            Objects = objects;
             AttackObjects = attackObjects;
         }
 
-        public static void BeginPlayerControl(int playerId, int currentId, ControlsEventArgs e)
+        public static void BeginPlayerControl(int playerId, int currentId, MainCharacterControlData e)
         {
             PlayerId = playerId;
             CurrentId = currentId;
             TryAttackAndChangeSpeed(e);
         }
 
-        private static void TryAttackAndChangeSpeed(ControlsEventArgs e)
+        private static void TryAttackAndChangeSpeed(MainCharacterControlData e)
         {
             if (Direction != None && Direction != up)
-            PrevDirection = Direction;
+                PrevDirection = Direction;
             Direction = e.Direction;
             if (e.MouseLeftButtonState == pressed)
             {
@@ -86,7 +84,6 @@ namespace MyGame.Model
                     player.Pos.X - 16, player.Pos.Y, left);
             }
 
-            Objects.Add(CurrentId, generatedObject);
             MapObjects.Add(CurrentId, generatedObject);
             AttackObjects.Add(CurrentId, generatedObject as IAttackObject);
             CurrentId++;

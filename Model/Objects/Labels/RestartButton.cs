@@ -8,10 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using MyGame.View;
+using MyGame.Model.ObjectTypes;
 
-namespace MyGame.Model
+namespace MyGame.Model.Objects.Labels
 {
-    public class RestartButton : IButton, IAnimationLabelObject
+    public class RestartButton : IButton
     {
         public int ImageId { get; }
         public Vector2 Pos { get; }

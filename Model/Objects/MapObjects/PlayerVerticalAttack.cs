@@ -7,10 +7,11 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyGame.Model.ObjectTypes;
 using MyGame.View;
 using static MyGame.Model.Direction;
 
-namespace MyGame.Model
+namespace MyGame.Model.Objects.MapObjects
 {
     public class PlayerVerticalAttack : IMapObject, IAnimationMapObject, IAttackObject
     {
@@ -30,7 +31,7 @@ namespace MyGame.Model
 
         public Direction Direction { get; private set; }
         private int DestructionTimer { get; set; }
-        public int Damage {  get; private set; }
+        public int Damage { get; private set; }
 
 
         public PlayerVerticalAttack(Vector2 position, int width, int height, int imageId, Direction direction)
@@ -90,11 +91,11 @@ namespace MyGame.Model
         }
 
         public Rectangle Animate(int widthImage)
-        { 
+        {
             if (AnimationTimer == 0)
             {
                 ImagePos = Animation.AnimateObjectMove(Width, Height,
-                    widthImage, ImagePos, Pos - PrevPos); 
+                    widthImage, ImagePos, Pos - PrevPos);
             }
             UpdateAnimationTimers();
             return new Rectangle((int)ImagePos.X, (int)ImagePos.Y, Width, Height);

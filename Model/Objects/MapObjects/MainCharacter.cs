@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 using System.Threading;
 using MyGame.View;
 using static System.Net.Mime.MediaTypeNames;
+using MyGame.Model.ObjectTypes;
 
-namespace MyGame.Model
+namespace MyGame.Model.Objects.MapObjects
 {
     public class MainCharacter : IMapObject, ISolidObject, IGravityObject, IAnimationMapObject, IAliveObject
     {
@@ -150,6 +151,14 @@ namespace MyGame.Model
             ImmortalTimer -= 1;
         }
 
+        public void ControlPosHeight()
+        {
+            if (Pos.Y > 1500)
+            {
+                HP = 0;
+            }
+        }
+
         public void Update()
         {
             Move(Speed.X, Speed.Y);
@@ -160,6 +169,7 @@ namespace MyGame.Model
                 if (Speed.X > 1e-3)
                     ChangeSpeed(Speed.X - 0.2f, Speed.Y);
             }
+            ControlPosHeight();
             UpdateImmortalTimer();
         }
     }

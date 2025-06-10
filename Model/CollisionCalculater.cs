@@ -7,23 +7,21 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyGame.Model.ObjectTypes;
 
 namespace MyGame.Model
 {
     public static class CollisionCalculater
     {
-        private static Dictionary<int, IObject> Objects;
         private static Dictionary<int, IMapObject> MapObjects;
         private static Dictionary<int, ISolidObject> SolidObjects;
         private static Dictionary<int, IGravityObject> GravityObjects;
 
         public static void ConnectCollisionCalculater(
-            Dictionary<int, IObject> objects,
             Dictionary<int, IMapObject> mapObjects,
             Dictionary<int, ISolidObject> solidObjects,
             Dictionary<int, IGravityObject> gravityObjects)
         {
-            Objects = objects;
             MapObjects = mapObjects;
             SolidObjects = solidObjects;
             GravityObjects = gravityObjects;
@@ -44,7 +42,7 @@ namespace MyGame.Model
 
         private static void FillCollisionObjects(Dictionary<int, Vector2> collisionObjects)
         {
-            foreach (var Id in Objects.Keys)
+            foreach (var Id in MapObjects.Keys)
             {
                 Vector2 initPos = MapObjects[Id].Pos;
                 MapObjects[Id].ChangePreviousPosition(initPos.X, initPos.Y);

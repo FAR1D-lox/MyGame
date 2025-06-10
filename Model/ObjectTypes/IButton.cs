@@ -7,9 +7,9 @@ using Microsoft.Xna.Framework.Input;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Model
+namespace MyGame.Model.ObjectTypes
 {
-    public interface IButton : ILabel
+    public interface IButton : IObject, IAnimationObject
     {
         public void CheckCursorHover(Vector2 MousePosition);
         public bool CursorHover { get; }

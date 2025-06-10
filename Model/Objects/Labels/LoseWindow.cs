@@ -7,8 +7,9 @@ using Microsoft.Xna.Framework.Input;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using MyGame.Model.ObjectTypes;
 
-namespace MyGame.Model
+namespace MyGame.Model.Objects.Labels
 {
     public class LoseWindow : ILabel
     {

@@ -8,10 +8,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace MyGame.Model
+namespace MyGame.Model.ObjectTypes
 {
-    public interface IAnimationMapObject : IAnimationObject
+    public interface IAliveObject : IMapObject
     {
-        public int AnimationTimer { get; }
+        int HP { get; set; }
+        int ImmortalTimer { get; }
+        void TryReduceHealthPoints(int damage);
+        RectangleCollider Collider { get; }
+        void MoveCollider();
     }
 }

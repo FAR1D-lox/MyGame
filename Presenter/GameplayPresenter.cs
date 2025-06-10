@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.Model;
 using MyGame.View;
+using static MyGame.Presenter.GameState;
 
 namespace MyGame.Presenter
 {
@@ -15,6 +16,7 @@ namespace MyGame.Presenter
     {
         public IGameplayModel gameplayModel = null;
         public IGameplayView gameplayView = null;
+        GameState GameState { get; set; }
 
         public GameplayPresenter(IGameplayView gameplayView, IGameplayModel gameplayModel)
         {
@@ -22,30 +24,73 @@ namespace MyGame.Presenter
             this.gameplayView = gameplayView;
 
             this.gameplayModel.Updated += ModelViewUpdate;
-            this.gameplayView.PlayerActions += ViewModelMovePlayer;
+            this.gameplayView.ControlInputStates += ViewModelReadInput;
             this.gameplayView.CycleFinished += ViewModelUpdate;
 
             this.gameplayModel.Initialize();
         }
 
-        private void ViewModelMovePlayer(object sender, ControlsEventArgs e)
+        private void ViewModelReadInput(object sender, InputData e)
         {
-            gameplayModel.ControlPlayerGameplay(e);
+            if (GameState == Running)
+            {
+                gameplayModel.ControlPlayerGameplay(
+                    new MainCharacterControlData
+                    {
+                        Direction = Controller.FindDirection(e.PressedKeys),
+                        MouseLeftButtonState = Controller.MouseController(e.MouseLeftButtonState)
+                    }
+                    );
+
+            }
+
+            else if (GameState == RestartWindow)
+            {
+                
+            }
+            else if (GameState == Pause)
+            {
+                
+            }
+            else if (GameState == Menu)
+            {
+                
+            }
+
+            gameplayModel.ControlLabels(
+                new LabelsControlData
+                {
+                    MouseLeftButtonState = Controller.MouseController(e.MouseLeftButtonState),
+                    MousePosition = e.MousePosition,
+                    IsEscPressed = Controller.IsPressedESC(e.PressedKeys)
+                }
+                );
         }
 
         private void ModelViewUpdate(object sender, GameplayEventArgs e)
         {
-            gameplayView.LoadGameCycleParameters(e.Objects, e.POVShift);
+            GameState = e.GameState;
+            gameplayView.LoadGameCycleParameters(e.MapObjects, e.LabelObjects, e.ButtonObjects, e.POVShift);
         }
 
-        private void ViewModelUpdate(object sender, GameTimeEventArgs e)
+        private void ViewModelUpdate(object sender, EventArgs e)
         {
-            gameplayModel.Update(e.GameTime);
+            if (GameState == Running)
+                gameplayModel.UpdateMap();
+
         }
 
         public void LaunchGame()
         {
             gameplayView.Run();
         }
+    }
+
+    public enum GameState
+    {
+        Running,
+        Menu,
+        Pause,
+        RestartWindow
     }
 }

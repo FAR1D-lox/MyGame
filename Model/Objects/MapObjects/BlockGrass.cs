@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.View;
+using MyGame.Model.ObjectTypes;
 
-namespace MyGame.Model
+namespace MyGame.Model.Objects.MapObjects
 {
-    public class BlockDirt : IMapObject, ISolidObject
+    public class BlockGrass : IMapObject, ISolidObject
     {
         public int ImageId { get; }
         public Vector2 Pos { get; private set; }
@@ -20,7 +20,7 @@ namespace MyGame.Model
         public int Height { get; }
         public RectangleCollider Collider { get; set; }
 
-        public BlockDirt(Vector2 position, int width, int height, int imageId)
+        public BlockGrass(Vector2 position, int width, int height, int imageId)
         {
             ImageId = imageId;
             PrevPos = position;
@@ -68,7 +68,7 @@ namespace MyGame.Model
 
         public void Update()
         {
-            
+
         }
     }
 }

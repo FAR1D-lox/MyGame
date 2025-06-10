@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyGame.Model.ObjectTypes;
 
-namespace MyGame.Model
+namespace MyGame.Model.Objects.MapObjects
 {
-    public class BlockDirtNoSolid : IMapObject
+    public class BlockStoneNoSolid : IMapObject
     {
         public int ImageId { get; }
         public Vector2 Pos { get; set; }
@@ -18,7 +19,7 @@ namespace MyGame.Model
         public int Width { get; }
         public int Height { get; }
 
-        public BlockDirtNoSolid(Vector2 position, int width, int height, int imageId)
+        public BlockStoneNoSolid(Vector2 position, int width, int height, int imageId)
         {
             ImageId = imageId;
             PrevPos = position;

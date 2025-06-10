@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyGame.Model.ObjectTypes;
+using MyGame.View;
 
-namespace MyGame.Model
+namespace MyGame.Model.Objects.MapObjects
 {
-    public class BlockGrass : IMapObject, ISolidObject
+    public class BlockStone : IMapObject, ISolidObject
     {
         public int ImageId { get; }
         public Vector2 Pos { get; private set; }
@@ -19,7 +21,7 @@ namespace MyGame.Model
         public int Height { get; }
         public RectangleCollider Collider { get; set; }
 
-        public BlockGrass(Vector2 position, int width, int height, int imageId)
+        public BlockStone(Vector2 position, int width, int height, int imageId)
         {
             ImageId = imageId;
             PrevPos = position;

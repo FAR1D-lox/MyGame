@@ -7,6 +7,8 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyGame.Model.Objects.MapObjects;
+using MyGame.Model.ObjectTypes;
 using NUnit.Framework.Internal.Execution;
 using static MyGame.Model.Direction;
 
@@ -14,7 +16,6 @@ namespace MyGame.Model
 {
     public static class EnemyControl
     {
-        private static Dictionary<int, IObject> Objects;
         private static Dictionary<int, IAliveObject> AliveObjects;
         private static Dictionary<int, IAttackObject> AttackObjects;
         private static Dictionary<int, IMapObject> MapObjects;
@@ -23,13 +24,11 @@ namespace MyGame.Model
         public static int CurrentId { get; private set; }
 
         public static void ConnectEnemyControl(
-            Dictionary<int, IObject> objects,
             Dictionary<int, IAliveObject> aliveObjects,
             Dictionary<int, IAttackObject> attackObjects,
             Dictionary<int, IMapObject> mapObjects,
             int playerId)
         {
-            Objects = objects;
             AliveObjects = aliveObjects;
             AttackObjects = attackObjects;
             MapObjects = mapObjects;
@@ -54,7 +53,6 @@ namespace MyGame.Model
                         else
                             generatedObject = Factory.CreateEnemyAttack(
                                 enemy.Pos.X - 128, enemy.Pos.Y - enemy.Height / 2, left);
-                        Objects.Add(CurrentId, generatedObject);
                         MapObjects.Add(CurrentId, generatedObject);
                         AttackObjects.Add(CurrentId, generatedObject as IAttackObject);
                         CurrentId++;

@@ -7,10 +7,11 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyGame.Model.ObjectTypes;
 using MyGame.View;
 using static MyGame.Model.Direction;
 
-namespace MyGame.Model
+namespace MyGame.Model.Objects.MapObjects
 {
     public class PlayerHorisontalAttack : IMapObject, IAnimationMapObject, IAttackObject
     {
