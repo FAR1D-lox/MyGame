@@ -13,6 +13,18 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin BeginGameButtonFrames.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:BeginGameButtonFrames.png
+
 #begin ContinueButtonFrames.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -73,7 +85,7 @@
 /processorParam:TextureFormat=Color
 /build:Grass.png
 
-#begin LoseWindow.png
+#begin LeaveGameButtonFrames.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -83,7 +95,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:LoseWindow.png
+/build:LeaveGameButtonFrames.png
 
 #begin LoseWindow.png
 /importer:TextureImporter

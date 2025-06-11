@@ -23,6 +23,7 @@ namespace MyGame.Presenter
             this.gameplayModel = gameplayModel;
             this.gameplayView = gameplayView;
 
+            this.gameplayModel.Exit += ExitGame;
             this.gameplayModel.Updated += ModelViewUpdate;
             this.gameplayView.ControlInputStates += ViewModelReadInput;
             this.gameplayView.CycleFinished += ViewModelUpdate;
@@ -70,7 +71,8 @@ namespace MyGame.Presenter
         private void ModelViewUpdate(object sender, GameplayEventArgs e)
         {
             GameState = e.GameState;
-            gameplayView.LoadGameCycleParameters(e.MapObjects, e.LabelObjects, e.ButtonObjects, e.POVShift);
+            gameplayView.LoadGameCycleParameters(
+                e.MapObjects, e.LabelObjects, e.ButtonObjects, e.POVShift, e.GameState);
         }
 
         private void ViewModelUpdate(object sender, EventArgs e)
@@ -78,6 +80,11 @@ namespace MyGame.Presenter
             if (GameState == Running)
                 gameplayModel.UpdateMap();
 
+        }
+
+        private void ExitGame(object sender, EventArgs e)
+        {
+            gameplayView.ExitGame();
         }
 
         public void LaunchGame()

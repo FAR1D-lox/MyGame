@@ -28,7 +28,9 @@ namespace MyGame.Model
                 {"ExitToMenuButton", ((byte) ObjectTypes.exitToMenuButton, 160, 160) },
                 {"PauseWindow", ((byte) ObjectTypes.pauseWindow, 960, 540) },
                 {"PauseButton", ((byte) ObjectTypes.pauseButton, 160, 120) },
-                {"ContinueButton", ((byte) ObjectTypes.continueButton, 160, 160) }
+                {"ContinueButton", ((byte) ObjectTypes.continueButton, 160, 160) },
+                {"BeginGameButton", ((byte) ObjectTypes.beginGameButton, 480, 150) },
+                {"LeaveGameButton", ((byte) ObjectTypes.leaveGameButton, 480, 150) }
             };
         public static MainCharacter CreateMainCharacter(float x, float y, Vector2 speed)
         {
@@ -129,12 +131,14 @@ namespace MyGame.Model
         public static RestartButton CreateRestartButton(float x, float y)
         {
             var restartButton = new RestartButton(
-                new Vector2(
-                    x - _objects["RestartButton"].width * 0.5f,
-                    y - _objects["RestartButton"].height),
+                new Vector2(x, y),
                 _objects["RestartButton"].width,
                 _objects["RestartButton"].height,
-                _objects["RestartButton"].type);
+                _objects["RestartButton"].type,
+                new Vector2(
+                    -_objects["RestartButton"].width * 0.5f,
+                    -_objects["RestartButton"].height
+                ));
             return restartButton;
         }
 
@@ -153,37 +157,60 @@ namespace MyGame.Model
         public static PauseButton CreatePauseButton(float x, float y)
         {
             var pauseButton = new PauseButton(
-                new Vector2(
-                    x - _objects["PauseButton"].width * 0.5f,
-                    y - _objects["PauseButton"].height),
+                new Vector2(x, y),
                 _objects["PauseButton"].width,
                 _objects["PauseButton"].height,
-                _objects["PauseButton"].type);
+                _objects["PauseButton"].type,
+                new Vector2(-900, -700));
             return pauseButton;
         }
 
         public static ExitToMenuButton CreateExitToMenuButton(float x, float y)
         {
             var exitToMenuButton = new ExitToMenuButton(
-                new Vector2(
-                    x - _objects["ExitToMenuButton"].width * 0.5f - 206,
-                    y - _objects["ExitToMenuButton"].height - 79),
+                new Vector2(x, y),
                 _objects["ExitToMenuButton"].width,
                 _objects["ExitToMenuButton"].height,
-                _objects["ExitToMenuButton"].type);
+                _objects["ExitToMenuButton"].type,
+                new Vector2(-286, -238));
             return exitToMenuButton;
         }
 
         public static ContinueButton CreateContinueButton(float x, float y)
         {
             var continueButton = new ContinueButton(
-                new Vector2(
-                    x - _objects["ContinueButton"].width * 0.5f + 206,
-                    y - _objects["ContinueButton"].height - 79),
+                new Vector2(x, y),
                 _objects["ContinueButton"].width,
                 _objects["ContinueButton"].height,
-                _objects["ContinueButton"].type);
+                _objects["ContinueButton"].type,
+                new Vector2(126, -238));
             return continueButton;
+        }
+
+        public static BeginGameButton CreateBeginGameButton(float x, float y)
+        {
+            var beginGameButton = new BeginGameButton(
+                new Vector2(
+                    x - _objects["BeginGameButton"].width / 2,
+                    y - _objects["BeginGameButton"].height / 2),
+                _objects["BeginGameButton"].width,
+                _objects["BeginGameButton"].height,
+                _objects["BeginGameButton"].type,
+                new Vector2(0, -100));
+            return beginGameButton;
+        }
+
+        public static LeaveGameButton CreateLeaveGameButton(float x, float y)
+        {
+            var leaveGameButton = new LeaveGameButton(
+                new Vector2(
+                    x - _objects["LeaveGameButton"].width / 2,
+                    y - _objects["LeaveGameButton"].height / 2),
+                _objects["LeaveGameButton"].width,
+                _objects["LeaveGameButton"].height,
+                _objects["LeaveGameButton"].type,
+                new Vector2(0, 100));
+            return leaveGameButton;
         }
 
         public enum ObjectTypes : byte
@@ -201,7 +228,9 @@ namespace MyGame.Model
             pauseWindow,
             pauseButton,
             exitToMenuButton,
-            continueButton
+            continueButton,
+            beginGameButton,
+            leaveGameButton
         }
     }
 }

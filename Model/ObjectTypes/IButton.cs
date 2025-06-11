@@ -12,6 +12,8 @@ namespace MyGame.Model.ObjectTypes
     public interface IButton : IObject, IAnimationObject
     {
         public void CheckCursorHover(Vector2 MousePosition);
+        public Vector2 PositionRelative { get; }
         public bool CursorHover { get; }
+        public new Vector2 Pos { get; set; }
     }
 }

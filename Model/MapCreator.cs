@@ -40,6 +40,7 @@ namespace MyGame.Model
 
         public static void CreateFirstMap()
         {
+            IsPlayerPlaced = false;
             Map[0, 4] = 'P';
             Map[0, 2] = 'G';
             Map[2, 3] = 'G';

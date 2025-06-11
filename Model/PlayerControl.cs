@@ -26,6 +26,7 @@ namespace MyGame.Model
         public static int CurrentId { get; set; }
         private static Direction Direction;
         private static Direction PrevDirection;
+        private static int attacksTimer = 0;
 
         public static void ConnectPlayerControl(
             Dictionary<int, IMapObject> mapObjects,
@@ -59,34 +60,39 @@ namespace MyGame.Model
             MainCharacter player = MapObjects[PlayerId] as MainCharacter;
             IMapObject generatedObject = null;
 
-            if (Direction == right
-                || Direction == rightUp)
+            if (attacksTimer <= 0)
             {
-                generatedObject = Factory.CreatePlayerHorisontalAttack(
-                    player.Pos.X + player.Width, player.Pos.Y + player.Height / 2, right);
-            }
-            else if (Direction == left
-                || Direction == leftUp)
-            {
-                generatedObject = Factory.CreatePlayerHorisontalAttack(
-                    player.Pos.X - 64, player.Pos.Y + player.Height / 2, left);
-            }
-            else if (PrevDirection == right
-                || PrevDirection == rightUp)
-            {
-                generatedObject = Factory.CreatePlayerVecticalAttack(
-                    player.Pos.X + player.Width, player.Pos.Y, right);
-            }
-            else if (PrevDirection == left
-                | PrevDirection == leftUp)
-            {
-                generatedObject = Factory.CreatePlayerVecticalAttack(
-                    player.Pos.X - 16, player.Pos.Y, left);
-            }
+                if (Direction == right
+                    || Direction == rightUp)
+                {
+                    generatedObject = Factory.CreatePlayerHorisontalAttack(
+                        player.Pos.X + player.Width, player.Pos.Y + player.Height / 2, right);
+                }
+                else if (Direction == left
+                    || Direction == leftUp)
+                {
+                    generatedObject = Factory.CreatePlayerHorisontalAttack(
+                        player.Pos.X - 64, player.Pos.Y + player.Height / 2, left);
+                }
+                else if (PrevDirection == right
+                    || PrevDirection == rightUp)
+                {
+                    generatedObject = Factory.CreatePlayerVecticalAttack(
+                        player.Pos.X + player.Width, player.Pos.Y, right);
+                }
+                else if (PrevDirection == left
+                    | PrevDirection == leftUp)
+                {
+                    generatedObject = Factory.CreatePlayerVecticalAttack(
+                        player.Pos.X - 16, player.Pos.Y, left);
+                }
 
-            MapObjects.Add(CurrentId, generatedObject);
-            AttackObjects.Add(CurrentId, generatedObject as IAttackObject);
-            CurrentId++;
+                MapObjects.Add(CurrentId, generatedObject);
+                AttackObjects.Add(CurrentId, generatedObject as IAttackObject);
+                CurrentId++;
+                attacksTimer = 15;
+            }
+            attacksTimer -= 1;
         }
 
         private static void ChangePlayerSpeed(Direction direction)

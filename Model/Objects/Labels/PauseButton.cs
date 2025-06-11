@@ -15,15 +15,30 @@ namespace MyGame.Model.Objects.Labels
     public class PauseButton : IButton
     {
         public int ImageId { get; }
-        public Vector2 Pos { get; }
+        private Vector2 _pos;
+        public Vector2 Pos
+        {
+            get
+            {
+                return _pos + PositionRelative;
+            }
+
+            set
+            {
+                _pos = value;
+                Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y, Width, Height);
+            }
+        }
         public int Width { get; }
         public int Height { get; }
         public bool CursorHover { get; private set; }
         public Vector2 ImagePos { get; private set; }
-        private RectangleCollider Collider { get; set; }
-        public PauseButton(Vector2 position, int width, int height, int imageId)
+        public RectangleCollider Collider { get; private set; }
+        public Vector2 PositionRelative { get; }
+        public PauseButton(Vector2 position, int width, int height, int imageId, Vector2 positionRelative)
         {
             ImageId = imageId;
+            PositionRelative = positionRelative;
             Pos = position;
             Width = width;
             Height = height;

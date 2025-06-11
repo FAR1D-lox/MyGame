@@ -3,9 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.Model;
 using MyGame.Model.ObjectTypes;
+using MyGame.Presenter;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using static MyGame.Presenter.GameState;
 
 namespace MyGame.View
 {
@@ -24,6 +26,8 @@ namespace MyGame.View
         private ButtonState MouseLeftButtonState;
         private Vector2 MousePosition;
 
+        private GameState GameState;
+
         public GameCycleView()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -35,17 +39,22 @@ namespace MyGame.View
         public event EventHandler CycleFinished = delegate { };
         public event EventHandler<InputData> ControlInputStates = delegate { };
 
-        public void LoadGameCycleParameters(Dictionary<int, IMapObject> MapObjects, Dictionary<int, ILabel> LabelObjects, Dictionary<int, IButton> ButtonObjects, Vector2 POWShift)
+        public void LoadGameCycleParameters(
+            Dictionary<int, IMapObject> MapObjects,
+            Dictionary<int, ILabel> LabelObjects,
+            Dictionary<int, IButton> ButtonObjects,
+            Vector2 POWShift, GameState GameState)
         {
             this.MapObjects = MapObjects;
             this.LabelObjects = LabelObjects;
             this.ButtonObjects = ButtonObjects;
-            if (POWShift == new Vector2(float.MinValue, float.MinValue))
+            if ((this.GameState == Menu || this.GameState == RestartWindow) && GameState == Running)
                 VisualShift = new Vector2(
                     -_graphics.PreferredBackBufferWidth * 0.5f,
                     -_graphics.PreferredBackBufferHeight * 0.2f);
             else
                 VisualShift += POWShift;
+            this.GameState = GameState;
         }
 
         protected override void Initialize()
@@ -76,6 +85,8 @@ namespace MyGame.View
             Textures.Add((byte)Factory.ObjectTypes.exitToMenuButton, Content.Load<Texture2D>("ExitButtonFrames"));
             Textures.Add((byte)Factory.ObjectTypes.pauseButton, Content.Load<Texture2D>("PauseButtonFrames"));
             Textures.Add((byte)Factory.ObjectTypes.pauseWindow, Content.Load<Texture2D>("PauseWindow"));
+            Textures.Add((byte)Factory.ObjectTypes.beginGameButton, Content.Load<Texture2D>("BeginGameButtonFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.leaveGameButton, Content.Load<Texture2D>("LeaveGameButtonFrames"));
         }
 
         protected override void Update(GameTime gameTime)
@@ -91,7 +102,7 @@ namespace MyGame.View
                 {
                     PressedKeys = keyBoardResult,
                     MouseLeftButtonState = MouseLeftButtonState,
-                    MousePosition = MousePosition
+                    MousePosition = MousePosition,
                 }
             );
 
@@ -109,7 +120,7 @@ namespace MyGame.View
             {
                 if (obj is IMapObject)
                 {
-                    if (obj is IAnimationMapObject animatedObj)
+                    if (GameState == Running && obj is IAnimationMapObject animatedObj)
                     {
                         _spriteBatch.Draw
                         (
@@ -125,6 +136,7 @@ namespace MyGame.View
                         (
                             Textures[obj.ImageId],
                             obj.Pos - VisualShift,
+                            new Rectangle(0, 0, obj.Width, obj.Height),
                             Color.White
                         );
                     }
@@ -149,7 +161,13 @@ namespace MyGame.View
                     Color.White
                 );
             }
+            
             _spriteBatch.End();
+        }
+
+        public void ExitGame()
+        {
+            Exit();
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.Model;
 using MyGame.Model.ObjectTypes;
+using MyGame.Presenter;
 
 namespace MyGame.View
 {
@@ -15,7 +16,9 @@ namespace MyGame.View
     {
         event EventHandler CycleFinished;
         event EventHandler<InputData> ControlInputStates;
-        void LoadGameCycleParameters(Dictionary<int, IMapObject> MapObjects, Dictionary<int, ILabel> LabelObjects, Dictionary<int, IButton> ButtonObjects, Vector2 POVShift);
+        void LoadGameCycleParameters(Dictionary<int, IMapObject> MapObjects,
+            Dictionary<int, ILabel> LabelObjects, Dictionary<int, IButton> ButtonObjects, Vector2 POVShift, GameState GameState);
         void Run();
+        void ExitGame();
     }
 }

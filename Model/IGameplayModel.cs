@@ -22,6 +22,7 @@ namespace MyGame.Model
         public Dictionary<int, IAliveObject> AliveObjects { get; set; }
         public Dictionary<int, IAttackObject> AttackObjects { get; set; }
         event EventHandler<GameplayEventArgs> Updated;
+        event EventHandler<EventArgs> Exit;
         void UpdateMap();
         void ControlLabels(LabelsControlData e);
         void ControlPlayerGameplay(MainCharacterControlData e);

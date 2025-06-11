@@ -12,7 +12,7 @@ using MyGame.Model.ObjectTypes;
 
 namespace MyGame.Model.Objects.Labels
 {
-    public class ContinueButton : IButton
+    public class LeaveGameButton : IButton
     {
         public int ImageId { get; }
         private Vector2 _pos;
@@ -35,7 +35,7 @@ namespace MyGame.Model.Objects.Labels
         public Vector2 ImagePos { get; private set; }
         private RectangleCollider Collider { get; set; }
         public Vector2 PositionRelative { get; }
-        public ContinueButton(Vector2 position, int width, int height, int imageId, Vector2 positionRelative)
+        public LeaveGameButton(Vector2 position, int width, int height, int imageId, Vector2 positionRelative)
         {
             ImageId = imageId;
             PositionRelative = positionRelative;
