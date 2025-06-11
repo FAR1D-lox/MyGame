@@ -214,6 +214,7 @@ namespace MyGame.Model
             if (button.CursorHover && MouseLeftButtonState == MouseClick.pressed && ButtonTimer <= 0)
             {
                 GameState = Menu;
+                ClearMap();
                 foreach (var id in LabelsId["PauseWindow"])
                 {
                     ButtonObjects.Remove(id);
