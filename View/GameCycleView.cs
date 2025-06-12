@@ -48,7 +48,7 @@ namespace MyGame.View
             this.MapObjects = MapObjects;
             this.LabelObjects = LabelObjects;
             this.ButtonObjects = ButtonObjects;
-            if ((this.GameState == Menu || this.GameState == RestartWindow) && GameState == Running)
+            if ((this.GameState == Menu || this.GameState == RestartWindow || this.GameState == Win) && GameState == Running)
                 VisualShift = new Vector2(
                     -_graphics.PreferredBackBufferWidth * 0.5f,
                     -_graphics.PreferredBackBufferHeight * 0.2f);
@@ -79,14 +79,17 @@ namespace MyGame.View
             Textures.Add((byte)Factory.ObjectTypes.playerVerticalAttack, Content.Load<Texture2D>("SplashFrames"));
             Textures.Add((byte)Factory.ObjectTypes.playerHorisontalAttack, Content.Load<Texture2D>("SideAttackFrames"));
             Textures.Add((byte)Factory.ObjectTypes.enemyAttack, Content.Load<Texture2D>("EnemyAttackFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.portal, Content.Load<Texture2D>("Portal"));
             Textures.Add((byte)Factory.ObjectTypes.loseWindow, Content.Load<Texture2D>("LoseWindow"));
-            Textures.Add((byte)Factory.ObjectTypes.restartButton, Content.Load<Texture2D>("RestartButtonFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.restartButton1, Content.Load<Texture2D>("RestartButtonFrames"));
             Textures.Add((byte)Factory.ObjectTypes.continueButton, Content.Load<Texture2D>("ContinueButtonFrames"));
             Textures.Add((byte)Factory.ObjectTypes.exitToMenuButton, Content.Load<Texture2D>("ExitButtonFrames"));
             Textures.Add((byte)Factory.ObjectTypes.pauseButton, Content.Load<Texture2D>("PauseButtonFrames"));
             Textures.Add((byte)Factory.ObjectTypes.pauseWindow, Content.Load<Texture2D>("PauseWindow"));
             Textures.Add((byte)Factory.ObjectTypes.beginGameButton, Content.Load<Texture2D>("BeginGameButtonFrames"));
             Textures.Add((byte)Factory.ObjectTypes.leaveGameButton, Content.Load<Texture2D>("LeaveGameButtonFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.winWindow, Content.Load<Texture2D>("WinWindow"));
+            Textures.Add((byte)Factory.ObjectTypes.restartButton2, Content.Load<Texture2D>("RestartButton2Frames"));
         }
 
         protected override void Update(GameTime gameTime)
@@ -95,6 +98,11 @@ namespace MyGame.View
             MousePosition = Mouse.GetState().Position.ToVector2() + VisualShift;
             
             var keyBoardResult = Keyboard.GetState().GetPressedKeys();
+
+            foreach (var button in ButtonObjects.Values)
+            {
+                button.CheckCursorHover(MousePosition);
+            }
 
             ControlInputStates.Invoke
             (

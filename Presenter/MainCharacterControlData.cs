@@ -12,6 +12,6 @@ namespace MyGame.Presenter
     public class MainCharacterControlData
     {
         public Direction Direction { get; set; }
-        public MouseClick MouseLeftButtonState { get; set; }
+        public ButtonState MouseLeftButtonState { get; set; }
     }
 }

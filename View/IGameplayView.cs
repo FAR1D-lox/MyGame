@@ -16,8 +16,11 @@ namespace MyGame.View
     {
         event EventHandler CycleFinished;
         event EventHandler<InputData> ControlInputStates;
-        void LoadGameCycleParameters(Dictionary<int, IMapObject> MapObjects,
-            Dictionary<int, ILabel> LabelObjects, Dictionary<int, IButton> ButtonObjects, Vector2 POVShift, GameState GameState);
+        void LoadGameCycleParameters(
+            Dictionary<int, IMapObject> MapObjects,
+            Dictionary<int, ILabel> LabelObjects,
+            Dictionary<int, IButton> ButtonObjects,
+            Vector2 POVShift, GameState GameState);
         void Run();
         void ExitGame();
     }

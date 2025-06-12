@@ -23,6 +23,7 @@ namespace MyGame.Model
         private static readonly char[,] Map = new char[13, 15];
         public static int CurrentId { get; private set; }
         public static int PlayerId { get; private set; }
+        public static int PortalId { get; private set; }
         public static bool IsPlayerPlaced { get; private set; }
         
         public static void ConnectMapCreator(
@@ -44,12 +45,12 @@ namespace MyGame.Model
             Map[0, 4] = 'P';
             Map[0, 2] = 'G';
             Map[2, 3] = 'G';
-            
+            Map[12, 4] = 'p';
             Map[1, 4] = 'G';
-            Map[4, 2] = 'E';
+            /*Map[4, 2] = 'E';
             Map[6, 2] = 'E';
             Map[8, 2] = 'E';
-            Map[10, 2] = 'E';
+            Map[10, 2] = 'E';*/
             Map[12, 2] = 'E';
             for (int x = 0; x < Map.GetLength(0); x++)
             {
@@ -87,6 +88,10 @@ namespace MyGame.Model
                         {
                             PlayerId = CurrentId;
                             IsPlayerPlaced = true;
+                        }
+                        if (Map[x, y] == 'p')
+                        {
+                            PortalId = CurrentId;
                         }
                         CurrentId++;
                     }
@@ -133,6 +138,12 @@ namespace MyGame.Model
             else if (sign == 's')
             {
                 generatedObject = Factory.CreateStoneNoSolid(
+                    x + TileSize / 2,
+                    y + TileSize / 2);
+            }
+            else if (sign == 'p')
+            {
+                generatedObject = Factory.CreatePortal(
                     x + TileSize / 2,
                     y + TileSize / 2);
             }

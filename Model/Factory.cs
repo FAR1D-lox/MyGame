@@ -23,14 +23,17 @@ namespace MyGame.Model
                 {"PlayerVerticalAttack", ((byte) ObjectTypes.playerVerticalAttack, 16, 64) },
                 {"PlayerHorisontalAttack", ((byte) ObjectTypes.playerHorisontalAttack, 64, 16) },
                 {"EnemyAttack", ((byte) ObjectTypes.enemyAttack, 128, 128) },
+                {"Portal", ((byte) ObjectTypes.portal, 71, 89) },
                 {"LoseWindow", ((byte) ObjectTypes.loseWindow, 960, 540) },
-                {"RestartButton", ((byte) ObjectTypes.restartButton, 480, 150) },
+                {"RestartButton1", ((byte) ObjectTypes.restartButton1, 480, 150) },
                 {"ExitToMenuButton", ((byte) ObjectTypes.exitToMenuButton, 160, 160) },
                 {"PauseWindow", ((byte) ObjectTypes.pauseWindow, 960, 540) },
                 {"PauseButton", ((byte) ObjectTypes.pauseButton, 160, 120) },
                 {"ContinueButton", ((byte) ObjectTypes.continueButton, 160, 160) },
                 {"BeginGameButton", ((byte) ObjectTypes.beginGameButton, 480, 150) },
-                {"LeaveGameButton", ((byte) ObjectTypes.leaveGameButton, 480, 150) }
+                {"LeaveGameButton", ((byte) ObjectTypes.leaveGameButton, 480, 150) },
+                {"WinWindow", ((byte) ObjectTypes.winWindow, 960, 540) },
+                {"RestartButton2", ((byte) ObjectTypes.restartButton2, 160, 160) },
             };
         public static MainCharacter CreateMainCharacter(float x, float y, Vector2 speed)
         {
@@ -66,22 +69,22 @@ namespace MyGame.Model
 
         public static BlockStone CreateStone(float x, float y)
         {
-            var dirt = new BlockStone(
+            var stone = new BlockStone(
                 new Vector2(x, y),
                 _objects["Stone"].width,
                 _objects["Stone"].height,
                 _objects["Stone"].type);
-            return dirt;
+            return stone;
         }
 
         public static BlockStoneNoSolid CreateStoneNoSolid(float x, float y)
         {
-            var dirtNoSolid = new BlockStoneNoSolid(
+            var stoneNoSolid = new BlockStoneNoSolid(
                 new Vector2(x, y),
                 _objects["StoneNoSolid"].width,
                 _objects["StoneNoSolid"].height,
                 _objects["StoneNoSolid"].type);
-            return dirtNoSolid;
+            return stoneNoSolid;
         }
 
         public static PlayerVerticalAttack CreatePlayerVecticalAttack(float x, float y, Direction direction)
@@ -116,9 +119,9 @@ namespace MyGame.Model
             return enemyAttack;
         }
 
-        public static LoseWindow CreateLoseWindow(float x, float y)
+        public static Window CreateLoseWindow(float x, float y)
         {
-            var loseWindow = new LoseWindow(
+            var loseWindow = new Window(
                 new Vector2(
                     x - _objects["LoseWindow"].width * 0.5f,
                     y - _objects["LoseWindow"].height),
@@ -128,23 +131,23 @@ namespace MyGame.Model
             return loseWindow;
         }
 
-        public static RestartButton CreateRestartButton(float x, float y)
+        public static Button CreateRestartButton1(float x, float y)
         {
-            var restartButton = new RestartButton(
+            var restartButton = new Button(
                 new Vector2(x, y),
-                _objects["RestartButton"].width,
-                _objects["RestartButton"].height,
-                _objects["RestartButton"].type,
+                _objects["RestartButton1"].width,
+                _objects["RestartButton1"].height,
+                _objects["RestartButton1"].type,
                 new Vector2(
-                    -_objects["RestartButton"].width * 0.5f,
-                    -_objects["RestartButton"].height
+                    -_objects["RestartButton1"].width * 0.5f,
+                    -_objects["RestartButton1"].height - 50
                 ));
             return restartButton;
         }
 
-        public static PauseWindow CreatePauseWindow(float x, float y)
+        public static Window CreatePauseWindow(float x, float y)
         {
-            var pauseWindow = new PauseWindow(
+            var pauseWindow = new Window(
                 new Vector2(
                     x - _objects["PauseWindow"].width * 0.5f,
                     y - _objects["PauseWindow"].height),
@@ -154,9 +157,9 @@ namespace MyGame.Model
             return pauseWindow;
         }
 
-        public static PauseButton CreatePauseButton(float x, float y)
+        public static Button CreatePauseButton(float x, float y)
         {
-            var pauseButton = new PauseButton(
+            var pauseButton = new Button(
                 new Vector2(x, y),
                 _objects["PauseButton"].width,
                 _objects["PauseButton"].height,
@@ -165,9 +168,9 @@ namespace MyGame.Model
             return pauseButton;
         }
 
-        public static ExitToMenuButton CreateExitToMenuButton(float x, float y)
+        public static Button CreateExitToMenuButton(float x, float y)
         {
-            var exitToMenuButton = new ExitToMenuButton(
+            var exitToMenuButton = new Button(
                 new Vector2(x, y),
                 _objects["ExitToMenuButton"].width,
                 _objects["ExitToMenuButton"].height,
@@ -176,9 +179,9 @@ namespace MyGame.Model
             return exitToMenuButton;
         }
 
-        public static ContinueButton CreateContinueButton(float x, float y)
+        public static Button CreateContinueButton(float x, float y)
         {
-            var continueButton = new ContinueButton(
+            var continueButton = new Button(
                 new Vector2(x, y),
                 _objects["ContinueButton"].width,
                 _objects["ContinueButton"].height,
@@ -187,9 +190,9 @@ namespace MyGame.Model
             return continueButton;
         }
 
-        public static BeginGameButton CreateBeginGameButton(float x, float y)
+        public static Button CreateBeginGameButton(float x, float y)
         {
-            var beginGameButton = new BeginGameButton(
+            var beginGameButton = new Button(
                 new Vector2(
                     x - _objects["BeginGameButton"].width / 2,
                     y - _objects["BeginGameButton"].height / 2),
@@ -200,9 +203,9 @@ namespace MyGame.Model
             return beginGameButton;
         }
 
-        public static LeaveGameButton CreateLeaveGameButton(float x, float y)
+        public static Button CreateLeaveGameButton(float x, float y)
         {
-            var leaveGameButton = new LeaveGameButton(
+            var leaveGameButton = new Button(
                 new Vector2(
                     x - _objects["LeaveGameButton"].width / 2,
                     y - _objects["LeaveGameButton"].height / 2),
@@ -211,6 +214,41 @@ namespace MyGame.Model
                 _objects["LeaveGameButton"].type,
                 new Vector2(0, 100));
             return leaveGameButton;
+        }
+
+        public static Portal CreatePortal(float x, float y)
+        {
+            var portal = new Portal(
+                new Vector2(
+                    x + _objects["Portal"].width / 2,
+                    y + 31),
+                _objects["Portal"].width,
+                _objects["Portal"].height,
+                _objects["Portal"].type);
+            return portal;
+        }
+
+        public static Window CreateWinWindow(float x, float y)
+        {
+            var winWindow = new Window(
+                new Vector2(
+                    x - _objects["WinWindow"].width * 0.5f,
+                    y - _objects["WinWindow"].height),
+                _objects["WinWindow"].width,
+                _objects["WinWindow"].height,
+                _objects["WinWindow"].type);
+            return winWindow;
+        }
+
+        public static Button CreateRestartButton2(float x, float y)
+        {
+            var restartButton = new Button(
+                new Vector2(x, y),
+                _objects["RestartButton2"].width,
+                _objects["RestartButton2"].height,
+                _objects["RestartButton2"].type,
+                new Vector2(126, -238));
+            return restartButton;
         }
 
         public enum ObjectTypes : byte
@@ -223,14 +261,17 @@ namespace MyGame.Model
             playerVerticalAttack,
             playerHorisontalAttack,
             enemyAttack,
+            portal,
             loseWindow,
-            restartButton,
+            restartButton1,
             pauseWindow,
             pauseButton,
             exitToMenuButton,
             continueButton,
             beginGameButton,
-            leaveGameButton
+            leaveGameButton,
+            winWindow,
+            restartButton2
         }
     }
 }

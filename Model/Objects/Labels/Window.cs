@@ -11,13 +11,13 @@ using MyGame.Model.ObjectTypes;
 
 namespace MyGame.Model.Objects.Labels
 {
-    public class LoseWindow : ILabel
+    public class Window : ILabel
     {
         public int ImageId { get; }
         public Vector2 Pos { get; }
         public int Width { get; }
         public int Height { get; }
-        public LoseWindow(Vector2 position, int width, int height, int imageId)
+        public Window(Vector2 position, int width, int height, int imageId)
         {
             ImageId = imageId;
             Pos = position;

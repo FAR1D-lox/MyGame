@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.Model.Objects.Labels;
+using MyGame.Model.Objects.MapObjects;
 using MyGame.Model.ObjectTypes;
 using MyGame.Presenter;
 using MyGame.View;
@@ -19,30 +20,28 @@ namespace MyGame.Model
     {
         public event EventHandler<GameplayEventArgs> Updated;
         public event EventHandler<EventArgs> Exit;
+        public event EventHandler<TimersEventArgs> UpdatedTimers;
 
         public int PlayerId { get; set; }
+        public int PortalId { get; set; }
         public Dictionary<int, IMapObject> MapObjects { get; set; }
         public Dictionary<int, ISolidObject> SolidObjects { get; set; }
         public Dictionary<int, IGravityObject> GravityObjects { get; set; }
         public Dictionary<int, IAliveObject> AliveObjects { get; set; }
         public Dictionary<int, IAttackObject> AttackObjects { get; set; }
-        public Dictionary<int, ILabel> LabelObjects { get; set; }
-        public Dictionary<int, IButton> ButtonObjects { get; set; }
+        public Dictionary<int, (Factory.ObjectTypes, ILabel)> LabelObjects { get; set; }
+        public Dictionary<int, (Factory.ObjectTypes, IButton)> ButtonObjects { get; set; }
 
         private GameState GameState { get; set; }
-
         private Vector2 MousePosition;
         private bool IsPlayerPlaced = false;
 
         private int CurrentId;
         private Vector2 PlayerShift;
         private Vector2 PlayerInitPos;
-        private MouseClick MouseLeftButtonState;
 
-        private Dictionary<string, List<int>> LabelsId;
+        private Dictionary<string, List<int>> ButtonsId;
 
-        private int EscTimer = 0;
-        private int ButtonTimer = 0;
 
         public void Initialize()
         {
@@ -57,14 +56,14 @@ namespace MyGame.Model
             LabelObjects = new();
             ButtonObjects = new();
 
-            LabelsId = new Dictionary<string, List<int>>()
+            ButtonsId = new Dictionary<string, List<int>>()
             {
                 {"PauseWindow", new List<int>()},
                 {"PauseButton", new List<int>()},
                 {"RestartWindow", new List<int>()},
                 {"Menu", new List<int>()},
+                {"WinWindow", new List<int>()},
             };
-
             OpenMenu();
 
             PlayerControl.ConnectPlayerControl(
@@ -76,12 +75,24 @@ namespace MyGame.Model
             MapCreator.ConnectMapCreator(
                 MapObjects, SolidObjects, GravityObjects, AliveObjects);
 
-            
 
+            var ViewLabelObjects = new Dictionary<int, ILabel>();
+            foreach (var label in LabelObjects)
+            {
+                ViewLabelObjects.Add(label.Key, label.Value.Item2);
+            }
+            var ViewButtonObjects = new Dictionary<int, IButton>();
+            foreach (var button in ButtonObjects)
+            {
+                ViewButtonObjects.Add(button.Key, button.Value.Item2);
+            }
 
             Updated.Invoke(this, new GameplayEventArgs()
             {
                 MapObjects = MapObjects,
+                LabelObjects = ViewLabelObjects,
+                ButtonObjects = ViewButtonObjects,
+                POVShift = new Vector2(),
                 GameState = GameState
             });
         }
@@ -102,16 +113,43 @@ namespace MyGame.Model
                 AttacksControl.ActivateAttacksControl();
 
                 if (MapObjects.ContainsKey(PlayerId))
+                {
                     PlayerShift = MapObjects[PlayerId].Pos - PlayerInitPos;
+                    if (RectangleCollider.IsCollided(
+                        (MapObjects[PlayerId] as MainCharacter).Collider,
+                        (MapObjects[PortalId] as Portal).Collider)
+                        && !DetectEnemies())
+                    {
+                        GameState = Win;
+                        IsPlayerPlaced = false;
+                        ButtonObjects.Clear();
+                        LabelObjects.Clear();
+                        ButtonsId["PauseButton"].Clear();
+                        OpenWinWindow();
+                    }
+
+                }
                 else
                 {
                     GameState = RestartWindow;
                     IsPlayerPlaced = false;
+                    ButtonObjects.Clear();
+                    LabelObjects.Clear();
+                    ButtonsId["PauseButton"].Clear();
                     OpenRestartWindow();
                 }
             }
         }
 
+        private bool DetectEnemies()
+        {
+            foreach (var obj in MapObjects.Values)
+            {
+                if (obj is Enemy)
+                    return true;
+            }
+            return false;
+        }
         private void RestartMap()
         {
             ClearMap();
@@ -133,136 +171,189 @@ namespace MyGame.Model
             CurrentId = MapCreator.CurrentId;
             PlayerId = MapCreator.PlayerId;
             IsPlayerPlaced = MapCreator.IsPlayerPlaced;
+            PortalId = MapCreator.PortalId;
 
             EnemyControl.ConnectEnemyControl(
                 AliveObjects, AttackObjects, MapObjects, PlayerId);
-            ShowPauseButton();
         }
 
-        public void ControlLabels(LabelsControlData e)
+        public void ControlLabels()
         {
             if (GameState != Running)
                 PlayerShift = new Vector2(0, 0);
+            if (GameState != Menu)
             foreach (var button in ButtonObjects.Values)
-                if (!(button is BeginGameButton || button is LeaveGameButton))
-                    button.Pos = PlayerInitPos;
-
-            MouseLeftButtonState = e.MouseLeftButtonState;
-            MousePosition = e.MousePosition;
-
-            foreach (var button in new Dictionary<int, IButton>(ButtonObjects).Values)
+                button.Item2.Pos = PlayerInitPos;
+            
+            var ViewLabelObjects = new Dictionary<int, ILabel>();
+            foreach (var label in LabelObjects)
             {
-                button.CheckCursorHover(MousePosition);
-                if (button is RestartButton restartButton)
-                    TryRestart(restartButton);
-                else if (button is PauseButton pauseButton)
-                    TryPause(pauseButton, e.IsEscPressed);
-                else if (button is ExitToMenuButton exitToMenuButton)
-                    TryExitToMenu(exitToMenuButton);
-                else if (button is ContinueButton continueButton)
-                    TryContinueGame(continueButton, e.IsEscPressed);
-                else if (button is BeginGameButton beginGameButton)
-                    TryBeginGame(beginGameButton);
-                else if (button is LeaveGameButton leaveGameButton)
-                    TryLeaveGame(leaveGameButton);
-
+                ViewLabelObjects.Add(label.Key, label.Value.Item2);
             }
-            EscTimer -= 1;
-            ButtonTimer -= 1;
+            var ViewButtonObjects = new Dictionary<int, IButton>();
+            foreach (var button in ButtonObjects)
+            {
+                ViewButtonObjects.Add(button.Key, button.Value.Item2);
+            }
             Updated.Invoke(this,
                 new GameplayEventArgs
                 {
                     MapObjects = MapObjects,
-                    LabelObjects = LabelObjects,
-                    ButtonObjects = ButtonObjects,
+                    LabelObjects = ViewLabelObjects,
+                    ButtonObjects = ViewButtonObjects,
                     POVShift = PlayerShift,
                     GameState = GameState
                 });
         }
 
-        private void TryRestart(RestartButton button)
+        public void ControlMenuLabels(LabelsControlData labelsControlData)
         {
-            if (button.CursorHover && MouseLeftButtonState == MouseClick.pressed && ButtonTimer <= 0)
+            foreach (var id in new List<int>(ButtonsId["Menu"]))
             {
-                RestartMap();
-                PlayerShift = new Vector2(float.MinValue, float.MinValue);
-                GameState = Running;
-                foreach (var id in LabelsId["RestartWindow"])
-                {
-                    ButtonObjects.Remove(id);
-                    LabelObjects.Remove(id);
-                }
+                if (GameState != Menu)
+                    break;
+                if (ButtonObjects[id].Item1 == Factory.ObjectTypes.beginGameButton)
+                    TryBeginGame(ButtonObjects[id].Item2);
+                else if (ButtonObjects[id].Item1 == Factory.ObjectTypes.leaveGameButton)
+                    TryLeaveGame(ButtonObjects[id].Item2);
             }
         }
 
-        private void TryPause(PauseButton button, bool isEscPressed)
+        public void ControlWinLabels(LabelsControlData labelsControlData)
         {
-            if ((isEscPressed && EscTimer <= 0) ||
-                button.CursorHover && MouseLeftButtonState == MouseClick.pressed && ButtonTimer <= 0)
+            foreach (var id in new List<int>(ButtonsId["WinWindow"]))
+            {
+                if (GameState != Win)
+                    break;
+                if (ButtonObjects[id].Item1 == Factory.ObjectTypes.exitToMenuButton)
+                    TryExitToMenu(ButtonObjects[id].Item2);
+                else if (ButtonObjects[id].Item1 == Factory.ObjectTypes.restartButton2)
+                    TryRestart(ButtonObjects[id].Item2);
+            }
+        }
+
+        public void ControlRestartWindowLabels(LabelsControlData labelsControlData)
+        {
+            foreach (var id in new List<int>(ButtonsId["RestartWindow"]))
+            {
+                if (GameState != RestartWindow)
+                    break;
+                if (ButtonObjects[id].Item1 == Factory.ObjectTypes.restartButton1)
+                    TryRestart(ButtonObjects[id].Item2);
+            }
+        }
+
+        public void ControlPauseLabels(LabelsControlData labelsControlData)
+        {
+            foreach (var id in new List<int>(ButtonsId["PauseWindow"]))
+            {
+                if (GameState != Pause)
+                    break;
+                if (ButtonObjects[id].Item1 == Factory.ObjectTypes.exitToMenuButton)
+                    TryExitToMenu(ButtonObjects[id].Item2);
+                else if (ButtonObjects[id].Item1 == Factory.ObjectTypes.continueButton)
+                    TryContinueGame(ButtonObjects[id].Item2, labelsControlData.IsEscPressed);
+            }
+        }
+
+        public void ControlRunningLabels(LabelsControlData labelsControlData)
+        {
+            foreach (var id in new List<int>(ButtonsId["PauseButton"]))
+            {
+                if (GameState != Running)
+                    break;
+                if (ButtonObjects[id].Item1 == Factory.ObjectTypes.pauseButton)
+                    TryPause(ButtonObjects[id].Item2, labelsControlData.IsEscPressed);
+            }
+        }
+
+
+        public void UpdateTimers()
+        {
+            UpdatedTimers.Invoke(this,
+                new TimersEventArgs()
+                {
+                    ButtonTimer = 10
+                });
+        }
+
+
+        private void TryRestart(IButton button)
+        {
+            if (button.CursorHover)
+            {
+                GameState = Running;
+                RestartMap();
+                ButtonObjects.Clear();
+                LabelObjects.Clear();
+                ButtonsId["RestartWindow"].Clear();
+                ButtonsId["WinWindow"].Clear();
+                ShowPauseButton();
+                UpdateTimers();
+            }
+        }
+
+        private void TryPause(IButton button, bool isEscPressed)
+        {
+            if (button.CursorHover || isEscPressed)
             {
                 GameState = Pause;
+                ButtonObjects.Clear();
+                LabelObjects.Clear();
+                ButtonsId["PauseButton"].Clear();
                 OpenPauseWindow();
-                foreach (var id in LabelsId["PauseButton"])
-                    ButtonObjects.Remove(id);
-                EscTimer = 10;
-                ButtonTimer = 10;
+                UpdateTimers();
             }
         }
 
-        private void TryExitToMenu(ExitToMenuButton button)
+        private void TryExitToMenu(IButton button)
         {
-            if (button.CursorHover && MouseLeftButtonState == MouseClick.pressed && ButtonTimer <= 0)
+            if (button.CursorHover)
             {
                 GameState = Menu;
                 ClearMap();
-                foreach (var id in LabelsId["PauseWindow"])
-                {
-                    ButtonObjects.Remove(id);
-                    LabelObjects.Remove(id);
-                }
+                ButtonObjects.Clear();
+                LabelObjects.Clear();
+                ButtonsId["PauseWindow"].Clear();
+                ButtonsId["WinWindow"].Clear();
                 OpenMenu();
-                ButtonTimer = 10;
+                UpdateTimers();
             }
         }
 
-        private void TryContinueGame(ContinueButton button, bool isEscPressed)
+        private void TryContinueGame(IButton button, bool isEscPressed)
         {
-            if ((isEscPressed && EscTimer <= 0) ||
-                button.CursorHover && MouseLeftButtonState == MouseClick.pressed && ButtonTimer <= 0)
+            if (button.CursorHover || isEscPressed)
             {
                 GameState = Running;
-                foreach (var id in LabelsId["PauseWindow"])
-                {
-                    ButtonObjects.Remove(id);
-                    LabelObjects.Remove(id);
-                }
+                ButtonObjects.Clear();
+                LabelObjects.Clear();
+                ButtonsId["PauseWindow"].Clear();
                 ShowPauseButton();
-                EscTimer = 10;
-                ButtonTimer = 10;
+                UpdateTimers();
             }
         }
 
-        private void TryBeginGame(BeginGameButton button)
+        private void TryBeginGame(IButton button)
         {
-            if (button.CursorHover && MouseLeftButtonState == MouseClick.pressed && ButtonTimer <= 0)
+            if (button.CursorHover)
             {
                 GameState = Running;
-                foreach (var id in LabelsId["Menu"])
-                {
-                    ButtonObjects.Remove(id);
-                }
                 RestartMap();
+                ButtonObjects.Clear();
+                LabelObjects.Clear();
+                ButtonsId["Menu"].Clear();
                 ShowPauseButton();
-                ButtonTimer = 10;
+                UpdateTimers();
             }
         }
 
-        private void TryLeaveGame(LeaveGameButton button)
+        private void TryLeaveGame(IButton button)
         {
-            if (button.CursorHover && MouseLeftButtonState == MouseClick.pressed && ButtonTimer <= 0)
+            if (button.CursorHover)
             {
                 Exit.Invoke(this, new EventArgs());
-                ButtonTimer = 10;
+                UpdateTimers();
             }
         }
 
@@ -291,17 +382,16 @@ namespace MyGame.Model
         {
             ILabel generatedLabelObject;
             generatedLabelObject = Factory.CreatePauseWindow(PlayerInitPos.X, PlayerInitPos.Y);
-            LabelObjects.Add(CurrentId, generatedLabelObject);
-            LabelsId["PauseWindow"].Add(CurrentId);
+            LabelObjects.Add(CurrentId, (Factory.ObjectTypes.pauseWindow, generatedLabelObject));
             CurrentId++;
             IButton generatedButtonObject;
             generatedButtonObject = Factory.CreateExitToMenuButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, generatedButtonObject);
-            LabelsId["PauseWindow"].Add(CurrentId);
+            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.exitToMenuButton, generatedButtonObject));
+            ButtonsId["PauseWindow"].Add(CurrentId);
             CurrentId++;
             generatedButtonObject = Factory.CreateContinueButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, generatedButtonObject);
-            LabelsId["PauseWindow"].Add(CurrentId);
+            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.continueButton, generatedButtonObject));
+            ButtonsId["PauseWindow"].Add(CurrentId);
             CurrentId++;
         }
         
@@ -309,13 +399,12 @@ namespace MyGame.Model
         {
             ILabel generatedLabelObject;
             generatedLabelObject = Factory.CreateLoseWindow(PlayerInitPos.X, PlayerInitPos.Y);
-            LabelObjects.Add(CurrentId, generatedLabelObject);
-            LabelsId["RestartWindow"].Add(CurrentId);
+            LabelObjects.Add(CurrentId, (Factory.ObjectTypes.loseWindow, generatedLabelObject));
             CurrentId++;
             IButton generatedButtonObject;
-            generatedButtonObject = Factory.CreateRestartButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, generatedButtonObject);
-            LabelsId["RestartWindow"].Add(CurrentId);
+            generatedButtonObject = Factory.CreateRestartButton1(PlayerInitPos.X, PlayerInitPos.Y);
+            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.restartButton1, generatedButtonObject));
+            ButtonsId["RestartWindow"].Add(CurrentId);
             CurrentId++;
         }
 
@@ -323,12 +412,29 @@ namespace MyGame.Model
         {
             IButton generatedButtonObject;
             generatedButtonObject = Factory.CreateBeginGameButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, generatedButtonObject);
-            LabelsId["Menu"].Add(CurrentId);
+            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.beginGameButton, generatedButtonObject));
+            ButtonsId["Menu"].Add(CurrentId);
             CurrentId++;
             generatedButtonObject = Factory.CreateLeaveGameButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, generatedButtonObject);
-            LabelsId["Menu"].Add(CurrentId);
+            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.leaveGameButton, generatedButtonObject));
+            ButtonsId["Menu"].Add(CurrentId);
+            CurrentId++;
+        }
+
+        public void OpenWinWindow()
+        {
+            ILabel generatedLabelObject;
+            generatedLabelObject = Factory.CreateWinWindow(PlayerInitPos.X, PlayerInitPos.Y);
+            LabelObjects.Add(CurrentId, (Factory.ObjectTypes.winWindow, generatedLabelObject));
+            CurrentId++;
+            IButton generatedButtonObject;
+            generatedButtonObject = Factory.CreateExitToMenuButton(PlayerInitPos.X, PlayerInitPos.Y);
+            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.exitToMenuButton, generatedButtonObject));
+            ButtonsId["WinWindow"].Add(CurrentId);
+            CurrentId++;
+            generatedButtonObject = Factory.CreateRestartButton2(PlayerInitPos.X, PlayerInitPos.Y);
+            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.restartButton2, generatedButtonObject));
+            ButtonsId["WinWindow"].Add(CurrentId);
             CurrentId++;
         }
 
@@ -336,14 +442,9 @@ namespace MyGame.Model
         {
             IButton generatedButtonObject;
             generatedButtonObject = Factory.CreatePauseButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, generatedButtonObject);
-            LabelsId["PauseButton"].Add(CurrentId);
+            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.pauseButton, generatedButtonObject));
+            ButtonsId["PauseButton"].Add(CurrentId);
             CurrentId++;
-        }
-
-        public void ContinueGame()
-        {
-            
         }
     }
 }

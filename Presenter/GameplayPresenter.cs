@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using MyGame.Model;
 using MyGame.View;
 using static MyGame.Presenter.GameState;
+using static Microsoft.Xna.Framework.Input.ButtonState;
 
 namespace MyGame.Presenter
 {
@@ -16,7 +17,9 @@ namespace MyGame.Presenter
     {
         public IGameplayModel gameplayModel = null;
         public IGameplayView gameplayView = null;
-        GameState GameState { get; set; }
+        private GameState GameState { get; set; }
+        private int ButtonTimer { get; set; }
+        LabelsControlData DataToControlLabels { get; set; }
 
         public GameplayPresenter(IGameplayView gameplayView, IGameplayModel gameplayModel)
         {
@@ -27,45 +30,64 @@ namespace MyGame.Presenter
             this.gameplayModel.Updated += ModelViewUpdate;
             this.gameplayView.ControlInputStates += ViewModelReadInput;
             this.gameplayView.CycleFinished += ViewModelUpdate;
+            this.gameplayModel.UpdatedTimers += UpdateTimers;
 
             this.gameplayModel.Initialize();
         }
 
         private void ViewModelReadInput(object sender, InputData e)
         {
+            DataToControlLabels = new LabelsControlData
+            {
+                MouseLeftButtonState = e.MouseLeftButtonState,
+                MousePosition = e.MousePosition,
+                IsEscPressed = Controller.IsPressedESC(e.PressedKeys)
+            };
+
             if (GameState == Running)
             {
                 gameplayModel.ControlPlayerGameplay(
                     new MainCharacterControlData
                     {
                         Direction = Controller.FindDirection(e.PressedKeys),
-                        MouseLeftButtonState = Controller.MouseController(e.MouseLeftButtonState)
+                        MouseLeftButtonState = e.MouseLeftButtonState
                     }
                     );
-
             }
 
-            else if (GameState == RestartWindow)
+            if (ButtonTimer <= 0)
             {
-                
-            }
-            else if (GameState == Pause)
-            {
-                
-            }
-            else if (GameState == Menu)
-            {
-                
-            }
-
-            gameplayModel.ControlLabels(
-                new LabelsControlData
+                if (e.MouseLeftButtonState == Pressed  ||
+                    Controller.IsPressedESC(e.PressedKeys))
                 {
-                    MouseLeftButtonState = Controller.MouseController(e.MouseLeftButtonState),
-                    MousePosition = e.MousePosition,
-                    IsEscPressed = Controller.IsPressedESC(e.PressedKeys)
+                    if (GameState == Running)
+                    {
+                        gameplayModel.ControlRunningLabels(DataToControlLabels);
+                    }
+                    else if (GameState == Pause)
+                    {
+                        gameplayModel.ControlPauseLabels(DataToControlLabels);
+                    }
                 }
-                );
+                if (e.MouseLeftButtonState == Pressed)
+                {
+                    if (GameState == RestartWindow)
+                    {
+                        gameplayModel.ControlRestartWindowLabels(DataToControlLabels);
+                    }
+                    else if (GameState == Menu)
+                    {
+                        gameplayModel.ControlMenuLabels(DataToControlLabels);
+                    }
+                    else if (GameState == Win)
+                    {
+                        gameplayModel.ControlWinLabels(DataToControlLabels);
+                    }
+                }
+            }
+
+            gameplayModel.ControlLabels();
+            ButtonTimer -= 1;
         }
 
         private void ModelViewUpdate(object sender, GameplayEventArgs e)
@@ -80,6 +102,11 @@ namespace MyGame.Presenter
             if (GameState == Running)
                 gameplayModel.UpdateMap();
 
+        }
+
+        private void UpdateTimers(object sender, TimersEventArgs e)
+        {
+            ButtonTimer = e.ButtonTimer;
         }
 
         private void ExitGame(object sender, EventArgs e)
@@ -98,6 +125,7 @@ namespace MyGame.Presenter
         Running,
         Menu,
         Pause,
-        RestartWindow
+        RestartWindow,
+        Win
     }
 }

@@ -11,7 +11,7 @@ using MyGame.View;
 using MonoGame.Framework.Utilities;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using static MyGame.Model.Direction;
-using static MyGame.Model.MouseClick;
+using static Microsoft.Xna.Framework.Input.ButtonState;
 using MyGame.Presenter;
 using MyGame.Model.ObjectTypes;
 using MyGame.Model.Objects.MapObjects;
@@ -48,7 +48,7 @@ namespace MyGame.Model
             if (Direction != None && Direction != up)
                 PrevDirection = Direction;
             Direction = e.Direction;
-            if (e.MouseLeftButtonState == pressed)
+            if (e.MouseLeftButtonState == Pressed)
             {
                 PlayerAttack();
             }

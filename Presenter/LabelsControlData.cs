@@ -11,7 +11,7 @@ namespace MyGame.Presenter
 {
     public class LabelsControlData
     {
-        public MouseClick MouseLeftButtonState { get; set; }
+        public ButtonState MouseLeftButtonState { get; set; }
         public Vector2 MousePosition { get; set; }
         public bool IsEscPressed { get; set; }
     }

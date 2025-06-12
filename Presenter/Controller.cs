@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Timers;
 using static MyGame.Model.Direction;
-using static MyGame.Model.MouseClick;
 
 namespace MyGame.Presenter
 {
@@ -59,13 +58,6 @@ namespace MyGame.Presenter
             if (keys.Contains(Keys.Escape))
                 return true;
             return false;
-        }
-
-        public static MouseClick MouseController(ButtonState mouseLeftClick)
-        {
-            if (mouseLeftClick == ButtonState.Pressed)
-                return pressed;
-            return released;
         }
     }
 }

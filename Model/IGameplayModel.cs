@@ -23,13 +23,21 @@ namespace MyGame.Model
         public Dictionary<int, IAttackObject> AttackObjects { get; set; }
         event EventHandler<GameplayEventArgs> Updated;
         event EventHandler<EventArgs> Exit;
+        event EventHandler<TimersEventArgs> UpdatedTimers;
         void UpdateMap();
-        void ControlLabels(LabelsControlData e);
+
+        public void ControlLabels();
+
+        public void ControlMenuLabels(LabelsControlData labelsControlData);
+
+        public void ControlWinLabels(LabelsControlData labelsControlData);
+
+        public void ControlRestartWindowLabels(LabelsControlData labelsControlData);
+
+        public void ControlPauseLabels(LabelsControlData labelsControlData);
+
+        public void ControlRunningLabels(LabelsControlData labelsControlData);
         void ControlPlayerGameplay(MainCharacterControlData e);
-        void OpenPauseWindow();
-        void OpenRestartWindow();
-        void OpenMenu();
-        void ContinueGame();
         void Initialize();
     }
 
@@ -42,10 +50,9 @@ namespace MyGame.Model
         public GameState GameState { get; set; }
     }
 
-    public enum MouseClick : byte
+    public class TimersEventArgs : EventArgs
     {
-        released,
-        pressed
+        public int ButtonTimer;
     }
 
     public enum Direction : byte
