@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Model.ObjectTypes
 {
-    public interface ILabel : IObject
+    public interface IWindow : IObject
     {
 
     }

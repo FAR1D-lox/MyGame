@@ -94,7 +94,7 @@ namespace MyGame.Presenter
         {
             GameState = e.GameState;
             gameplayView.LoadGameCycleParameters(
-                e.MapObjects, e.LabelObjects, e.ButtonObjects, e.POVShift, e.GameState);
+                e.SolidObjects, e.NoSolidObjects, e.AttackObjects, e.BackgroundObjects, e.WindowObjects, e.ButtonObjects, e.POVShift, e.GameState);
         }
 
         private void ViewModelUpdate(object sender, EventArgs e)
@@ -118,6 +118,7 @@ namespace MyGame.Presenter
         {
             gameplayView.Run();
         }
+
     }
 
     public enum GameState

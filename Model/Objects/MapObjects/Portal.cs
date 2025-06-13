@@ -10,17 +10,18 @@ using MyGame.Model.ObjectTypes;
 
 namespace MyGame.Model.Objects.MapObjects
 {
-    public class Portal : IMapObject
+    public class Portal : NoSolidObject
     {
-        public int ImageId { get; }
-        public Vector2 Pos { get; set; }
-        public Vector2 PrevPos { get; set; }
-        public Vector2 Speed { get; private set; }
-        public int Width { get; }
-        public int Height { get; }
+
+        public new int ImageId { get; }
+        public new Vector2 Pos { get; set; }
+        public new Vector2 PrevPos { get; set; }
+        public new Vector2 Speed { get; private set; }
+        public new int Width { get; }
+        public new int Height { get; }
         public RectangleCollider Collider { get; private set; }
 
-        public Portal(Vector2 position, int width, int height, int imageId)
+        public Portal(Vector2 position, int width, int height, int imageId) : base(position, width, height, imageId)
         {
             ImageId = imageId;
             PrevPos = position;
@@ -30,36 +31,6 @@ namespace MyGame.Model.Objects.MapObjects
             Collider = new RectangleCollider((int)Pos.X + 11, (int)Pos.Y + 13, Width - 11 * 2, Height - 11 * 2);
         }
 
-        public void Move(float xMove, float yMove)
-        {
-            ChangePreviousPosition(Pos.X, Pos.Y);
-            Pos += new Vector2(xMove, yMove);
-        }
 
-        public void ChangePosition(float xPos, float yPos)
-        {
-            ChangePreviousPosition(Pos.X, Pos.Y);
-            Pos = new Vector2(xPos, yPos);
-        }
-
-        public void ChangePreviousPosition(float xPos, float yPos)
-        {
-            PrevPos = new Vector2(xPos, yPos);
-        }
-
-        public void ChangeSpeed(float xSpeed, float ySpeed)
-        {
-            Speed = new Vector2(xSpeed, ySpeed);
-        }
-
-        public void SpeedUp(float xSpeed, float ySpeed)
-        {
-            Speed += new Vector2(xSpeed, ySpeed);
-        }
-
-        public void Update()
-        {
-
-        }
     }
 }

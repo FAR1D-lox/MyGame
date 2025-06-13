@@ -10,45 +10,34 @@ using MyGame.Model.ObjectTypes;
 
 namespace MyGame.Model.Objects.MapObjects
 {
-    public class BlockGrass : IMapObject, ISolidObject
+    public class NoSolidObject : IMapObject
     {
         public int ImageId { get; }
-        public Vector2 Pos { get; private set; }
+        public Vector2 Pos { get; set; }
         public Vector2 PrevPos { get; set; }
         public Vector2 Speed { get; private set; }
         public int Width { get; }
         public int Height { get; }
-        public RectangleCollider Collider { get; set; }
 
-        public BlockGrass(Vector2 position, int width, int height, int imageId)
+        public NoSolidObject(Vector2 position, int width, int height, int imageId)
         {
             ImageId = imageId;
             PrevPos = position;
             Pos = position;
             Width = width;
             Height = height;
-            Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
-                width, height);
-        }
-
-        public void MoveCollider()
-        {
-            Collider = new RectangleCollider((int)Pos.X, (int)Pos.Y,
-                Width, Height);
         }
 
         public void Move(float xMove, float yMove)
         {
             ChangePreviousPosition(Pos.X, Pos.Y);
             Pos += new Vector2(xMove, yMove);
-            MoveCollider();
         }
 
         public void ChangePosition(float xPos, float yPos)
         {
             ChangePreviousPosition(Pos.X, Pos.Y);
             Pos = new Vector2(xPos, yPos);
-            MoveCollider();
         }
 
         public void ChangePreviousPosition(float xPos, float yPos)

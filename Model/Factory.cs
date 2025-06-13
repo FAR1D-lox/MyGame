@@ -34,7 +34,11 @@ namespace MyGame.Model
                 {"LeaveGameButton", ((byte) ObjectTypes.leaveGameButton, 480, 150) },
                 {"WinWindow", ((byte) ObjectTypes.winWindow, 960, 540) },
                 {"RestartButton2", ((byte) ObjectTypes.restartButton2, 160, 160) },
+                {"Clouds", ((byte) ObjectTypes.clouds, 6000, 400) },
+                {"Sun", ((byte) ObjectTypes.sun, 200, 440) },
+                {"JapanHouse", ((byte) ObjectTypes.japanHouse, 240, 360) }
             };
+
         public static MainCharacter CreateMainCharacter(float x, float y, Vector2 speed)
         {
             var player = new MainCharacter(
@@ -57,9 +61,9 @@ namespace MyGame.Model
             return enemy;
         }
 
-        public static BlockGrass CreateGrass(float x, float y)
+        public static Block CreateGrass(float x, float y)
         {
-            var grass = new BlockGrass(
+            var grass = new Block(
                 new Vector2(x, y),
                 _objects["Grass"].width,
                 _objects["Grass"].height,
@@ -67,9 +71,9 @@ namespace MyGame.Model
             return grass;
         }
 
-        public static BlockStone CreateStone(float x, float y)
+        public static Block CreateStone(float x, float y)
         {
-            var stone = new BlockStone(
+            var stone = new Block(
                 new Vector2(x, y),
                 _objects["Stone"].width,
                 _objects["Stone"].height,
@@ -77,9 +81,9 @@ namespace MyGame.Model
             return stone;
         }
 
-        public static BlockStoneNoSolid CreateStoneNoSolid(float x, float y)
+        public static NoSolidObject CreateStoneNoSolid(float x, float y)
         {
-            var stoneNoSolid = new BlockStoneNoSolid(
+            var stoneNoSolid = new NoSolidObject(
                 new Vector2(x, y),
                 _objects["StoneNoSolid"].width,
                 _objects["StoneNoSolid"].height,
@@ -251,6 +255,36 @@ namespace MyGame.Model
             return restartButton;
         }
 
+        public static BackgroundObject CreateClouds(float x, float y)
+        {
+            var clouds = new BackgroundObject(
+                new Vector2(x, y),
+                _objects["Clouds"].width,
+                _objects["Clouds"].height,
+                _objects["Clouds"].type);
+            return clouds;
+        }
+
+        public static BackgroundObject CreateSun(float x, float y)
+        {
+            var sun = new BackgroundObject(
+                new Vector2(x, y),
+                _objects["Sun"].width,
+                _objects["Sun"].height,
+                _objects["Sun"].type);
+            return sun;
+        }
+
+        public static NoSolidObject CreateJapanHouse(float x, float y)
+        {
+            var stoneNoSolid = new NoSolidObject(
+                new Vector2(x, y),
+                _objects["JapanHouse"].width,
+                _objects["JapanHouse"].height,
+                _objects["JapanHouse"].type);
+            return stoneNoSolid;
+        }
+
         public enum ObjectTypes : byte
         {
             player,
@@ -271,7 +305,10 @@ namespace MyGame.Model
             beginGameButton,
             leaveGameButton,
             winWindow,
-            restartButton2
+            restartButton2,
+            clouds,
+            sun,
+            japanHouse
         }
     }
 }

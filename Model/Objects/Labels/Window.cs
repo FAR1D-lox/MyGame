@@ -11,7 +11,7 @@ using MyGame.Model.ObjectTypes;
 
 namespace MyGame.Model.Objects.Labels
 {
-    public class Window : ILabel
+    public class Window : IWindow
     {
         public int ImageId { get; }
         public Vector2 Pos { get; }

@@ -13,7 +13,7 @@ using static MyGame.Model.Direction;
 
 namespace MyGame.Model.Objects.MapObjects
 {
-    public class EnemyAttack : IMapObject, IAnimationMapObject, IAttackObject
+    public class EnemyAttack : IAttackObject
     {
         public int ImageId { get; }
         public Vector2 Pos { get; private set; }

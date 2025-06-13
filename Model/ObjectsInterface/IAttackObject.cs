@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyGame.Model.ObjectTypes
 {
-    public interface IAttackObject
+    public interface IAttackObject : IAnimationMapObject, IMapObject
     {
         public bool DestroyPermission { get; }
         public int Damage { get; }

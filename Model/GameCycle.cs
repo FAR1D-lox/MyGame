@@ -24,16 +24,18 @@ namespace MyGame.Model
 
         public int PlayerId { get; set; }
         public int PortalId { get; set; }
+        public int CloudsId { get; set; }
         public Dictionary<int, IMapObject> MapObjects { get; set; }
         public Dictionary<int, ISolidObject> SolidObjects { get; set; }
+        public Dictionary<int, NoSolidObject> NoSolidObjects { get; set; }
         public Dictionary<int, IGravityObject> GravityObjects { get; set; }
         public Dictionary<int, IAliveObject> AliveObjects { get; set; }
         public Dictionary<int, IAttackObject> AttackObjects { get; set; }
-        public Dictionary<int, (Factory.ObjectTypes, ILabel)> LabelObjects { get; set; }
+        public Dictionary<int, BackgroundObject> BackgroundObjects { get; set; }
+        public Dictionary<int, (Factory.ObjectTypes, IWindow)> WindowObjects { get; set; }
         public Dictionary<int, (Factory.ObjectTypes, IButton)> ButtonObjects { get; set; }
 
         private GameState GameState { get; set; }
-        private Vector2 MousePosition;
         private bool IsPlayerPlaced = false;
 
         private int CurrentId;
@@ -49,11 +51,13 @@ namespace MyGame.Model
 
             MapObjects = new();
             SolidObjects = new();
+            NoSolidObjects = new();
             GravityObjects = new();
             AliveObjects = new();
             AttackObjects = new();
+            BackgroundObjects = new();
 
-            LabelObjects = new();
+            WindowObjects = new();
             ButtonObjects = new();
 
             ButtonsId = new Dictionary<string, List<int>>()
@@ -64,7 +68,6 @@ namespace MyGame.Model
                 {"Menu", new List<int>()},
                 {"WinWindow", new List<int>()},
             };
-            OpenMenu();
 
             PlayerControl.ConnectPlayerControl(
                 MapObjects, AttackObjects);
@@ -73,11 +76,12 @@ namespace MyGame.Model
             CollisionCalculater.ConnectCollisionCalculater(
                 MapObjects, SolidObjects, GravityObjects);
             MapCreator.ConnectMapCreator(
-                MapObjects, SolidObjects, GravityObjects, AliveObjects);
+                MapObjects, SolidObjects, NoSolidObjects, GravityObjects, AliveObjects, BackgroundObjects);
+            LabelContol.ConnectLabelControl(WindowObjects, ButtonObjects, ButtonsId);
+            LabelContol.OpenMenu(PlayerInitPos, CurrentId);
 
-
-            var ViewLabelObjects = new Dictionary<int, ILabel>();
-            foreach (var label in LabelObjects)
+            var ViewLabelObjects = new Dictionary<int, IWindow>();
+            foreach (var label in WindowObjects)
             {
                 ViewLabelObjects.Add(label.Key, label.Value.Item2);
             }
@@ -87,17 +91,39 @@ namespace MyGame.Model
                 ViewButtonObjects.Add(button.Key, button.Value.Item2);
             }
 
-            Updated.Invoke(this, new GameplayEventArgs()
-            {
-                MapObjects = MapObjects,
-                LabelObjects = ViewLabelObjects,
-                ButtonObjects = ViewButtonObjects,
-                POVShift = new Vector2(),
-                GameState = GameState
-            });
+
+            CallUpdated();
         }
 
+        private void RestartMap()
+        {
+            ClearMap();
+            StartMap();
+        }
 
+        private void ClearMap()
+        {
+            MapObjects.Clear();
+            SolidObjects.Clear();
+            NoSolidObjects.Clear();
+            GravityObjects.Clear();
+            AliveObjects.Clear();
+            AttackObjects.Clear();
+            BackgroundObjects.Clear();
+        }
+
+        private void StartMap()
+        {
+            MapCreator.CreateFirstMap();
+            CurrentId = MapCreator.CurrentId;
+            PlayerId = MapCreator.PlayerId;
+            IsPlayerPlaced = MapCreator.IsPlayerPlaced;
+            PortalId = MapCreator.PortalId;
+            CloudsId = MapCreator.CloudsId;
+
+            EnemyControl.ConnectEnemyControl(
+                AliveObjects, AttackObjects, MapObjects, PlayerId);
+        }
 
         public void UpdateMap()
         {
@@ -112,31 +138,35 @@ namespace MyGame.Model
                 CollisionCalculater.ActivateCollisionCalculater();
                 AttacksControl.ActivateAttacksControl();
 
+
                 if (MapObjects.ContainsKey(PlayerId))
                 {
                     PlayerShift = MapObjects[PlayerId].Pos - PlayerInitPos;
+                    foreach (var obj in BackgroundObjects.Values)
+                    {
+                        obj.Move(PlayerShift.X, PlayerShift.Y);
+                    }
+                    if (BackgroundObjects[CloudsId].Pos.X > MapObjects[PlayerId].Pos.X - 960)
+                        BackgroundObjects[CloudsId].Move(-3000, 0);
+                    else
+                        BackgroundObjects[CloudsId].Move(1, 0);
+
                     if (RectangleCollider.IsCollided(
                         (MapObjects[PlayerId] as MainCharacter).Collider,
                         (MapObjects[PortalId] as Portal).Collider)
                         && !DetectEnemies())
                     {
-                        GameState = Win;
                         IsPlayerPlaced = false;
-                        ButtonObjects.Clear();
-                        LabelObjects.Clear();
-                        ButtonsId["PauseButton"].Clear();
-                        OpenWinWindow();
+                        UpdateGameStateAndLabels(Win, "PauseButton");
+                        LabelContol.OpenWinWindow(PlayerInitPos, CurrentId);
                     }
 
                 }
                 else
                 {
-                    GameState = RestartWindow;
                     IsPlayerPlaced = false;
-                    ButtonObjects.Clear();
-                    LabelObjects.Clear();
-                    ButtonsId["PauseButton"].Clear();
-                    OpenRestartWindow();
+                    UpdateGameStateAndLabels(RestartWindow, "PauseButton");
+                    LabelContol.OpenRestartWindow(PlayerInitPos, CurrentId);
                 }
             }
         }
@@ -150,60 +180,26 @@ namespace MyGame.Model
             }
             return false;
         }
-        private void RestartMap()
+
+        private void UpdateGravityObjectsSpeed()
         {
-            ClearMap();
-            StartMap();
+            foreach (var gravityObject in GravityObjects.Values)
+            {
+                gravityObject.UpdateGravity();
+            }
         }
 
-        private void ClearMap()
-        {
-            MapObjects.Clear();
-            SolidObjects.Clear();
-            GravityObjects.Clear();
-            AliveObjects.Clear();
-            AttackObjects.Clear();
-        }
 
-        private void StartMap()
-        {
-            MapCreator.CreateFirstMap();
-            CurrentId = MapCreator.CurrentId;
-            PlayerId = MapCreator.PlayerId;
-            IsPlayerPlaced = MapCreator.IsPlayerPlaced;
-            PortalId = MapCreator.PortalId;
 
-            EnemyControl.ConnectEnemyControl(
-                AliveObjects, AttackObjects, MapObjects, PlayerId);
-        }
 
         public void ControlLabels()
         {
             if (GameState != Running)
                 PlayerShift = new Vector2(0, 0);
             if (GameState != Menu)
-            foreach (var button in ButtonObjects.Values)
-                button.Item2.Pos = PlayerInitPos;
-            
-            var ViewLabelObjects = new Dictionary<int, ILabel>();
-            foreach (var label in LabelObjects)
-            {
-                ViewLabelObjects.Add(label.Key, label.Value.Item2);
-            }
-            var ViewButtonObjects = new Dictionary<int, IButton>();
-            foreach (var button in ButtonObjects)
-            {
-                ViewButtonObjects.Add(button.Key, button.Value.Item2);
-            }
-            Updated.Invoke(this,
-                new GameplayEventArgs
-                {
-                    MapObjects = MapObjects,
-                    LabelObjects = ViewLabelObjects,
-                    ButtonObjects = ViewButtonObjects,
-                    POVShift = PlayerShift,
-                    GameState = GameState
-                });
+                foreach (var button in ButtonObjects.Values)
+                    button.Item2.Pos = PlayerInitPos;
+            CallUpdated();
         }
 
         public void ControlMenuLabels(LabelsControlData labelsControlData)
@@ -267,29 +263,13 @@ namespace MyGame.Model
             }
         }
 
-
-        public void UpdateTimers()
-        {
-            UpdatedTimers.Invoke(this,
-                new TimersEventArgs()
-                {
-                    ButtonTimer = 10
-                });
-        }
-
-
         private void TryRestart(IButton button)
         {
             if (button.CursorHover)
             {
-                GameState = Running;
+                UpdateGameStateAndLabels(Running, "RestartWindow", "WinWindow");
                 RestartMap();
-                ButtonObjects.Clear();
-                LabelObjects.Clear();
-                ButtonsId["RestartWindow"].Clear();
-                ButtonsId["WinWindow"].Clear();
-                ShowPauseButton();
-                UpdateTimers();
+                LabelContol.ShowPauseButton(PlayerInitPos, CurrentId);
             }
         }
 
@@ -297,12 +277,8 @@ namespace MyGame.Model
         {
             if (button.CursorHover || isEscPressed)
             {
-                GameState = Pause;
-                ButtonObjects.Clear();
-                LabelObjects.Clear();
-                ButtonsId["PauseButton"].Clear();
-                OpenPauseWindow();
-                UpdateTimers();
+                UpdateGameStateAndLabels(Pause, "PauseButton");
+                LabelContol.OpenPauseWindow(PlayerInitPos, CurrentId);
             }
         }
 
@@ -310,14 +286,9 @@ namespace MyGame.Model
         {
             if (button.CursorHover)
             {
-                GameState = Menu;
+                UpdateGameStateAndLabels(Menu, "PauseWindow", "WinWindow");
                 ClearMap();
-                ButtonObjects.Clear();
-                LabelObjects.Clear();
-                ButtonsId["PauseWindow"].Clear();
-                ButtonsId["WinWindow"].Clear();
-                OpenMenu();
-                UpdateTimers();
+                LabelContol.OpenMenu(PlayerInitPos, CurrentId);
             }
         }
 
@@ -325,12 +296,8 @@ namespace MyGame.Model
         {
             if (button.CursorHover || isEscPressed)
             {
-                GameState = Running;
-                ButtonObjects.Clear();
-                LabelObjects.Clear();
-                ButtonsId["PauseWindow"].Clear();
-                ShowPauseButton();
-                UpdateTimers();
+                UpdateGameStateAndLabels(Running, "PauseWindow");
+                LabelContol.ShowPauseButton(PlayerInitPos, CurrentId);
             }
         }
 
@@ -338,13 +305,9 @@ namespace MyGame.Model
         {
             if (button.CursorHover)
             {
-                GameState = Running;
+                UpdateGameStateAndLabels(Running, "Menu");
                 RestartMap();
-                ButtonObjects.Clear();
-                LabelObjects.Clear();
-                ButtonsId["Menu"].Clear();
-                ShowPauseButton();
-                UpdateTimers();
+                LabelContol.ShowPauseButton(PlayerInitPos, CurrentId);
             }
         }
 
@@ -353,19 +316,30 @@ namespace MyGame.Model
             if (button.CursorHover)
             {
                 Exit.Invoke(this, new EventArgs());
-                UpdateTimers();
             }
         }
 
-
-
-        private void UpdateGravityObjectsSpeed()
+        private void UpdateGameStateAndLabels(GameState newGameState, string firstOpenWindow, string secondOpenWindow = null)
         {
-            foreach (var gravityObject in GravityObjects.Values)
-            {
-                gravityObject.UpdateGravity();
-            }
+            GameState = newGameState;
+            ButtonObjects.Clear();
+            WindowObjects.Clear();
+            ButtonsId[firstOpenWindow].Clear();
+            if (secondOpenWindow != null)
+                ButtonsId[secondOpenWindow].Clear();
+            UpdateTimers();
         }
+
+        public void UpdateTimers()
+        {
+            UpdatedTimers.Invoke(this,
+                new TimersEventArgs()
+                {
+                    ButtonTimer = 20
+                });
+        }
+
+
 
         public void ControlPlayerGameplay(MainCharacterControlData e)
         {
@@ -376,75 +350,30 @@ namespace MyGame.Model
             }
         }
 
-
-
-        public void OpenPauseWindow()
+        public void CallUpdated()
         {
-            ILabel generatedLabelObject;
-            generatedLabelObject = Factory.CreatePauseWindow(PlayerInitPos.X, PlayerInitPos.Y);
-            LabelObjects.Add(CurrentId, (Factory.ObjectTypes.pauseWindow, generatedLabelObject));
-            CurrentId++;
-            IButton generatedButtonObject;
-            generatedButtonObject = Factory.CreateExitToMenuButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.exitToMenuButton, generatedButtonObject));
-            ButtonsId["PauseWindow"].Add(CurrentId);
-            CurrentId++;
-            generatedButtonObject = Factory.CreateContinueButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.continueButton, generatedButtonObject));
-            ButtonsId["PauseWindow"].Add(CurrentId);
-            CurrentId++;
-        }
-        
-        public void OpenRestartWindow()
-        {
-            ILabel generatedLabelObject;
-            generatedLabelObject = Factory.CreateLoseWindow(PlayerInitPos.X, PlayerInitPos.Y);
-            LabelObjects.Add(CurrentId, (Factory.ObjectTypes.loseWindow, generatedLabelObject));
-            CurrentId++;
-            IButton generatedButtonObject;
-            generatedButtonObject = Factory.CreateRestartButton1(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.restartButton1, generatedButtonObject));
-            ButtonsId["RestartWindow"].Add(CurrentId);
-            CurrentId++;
-        }
-
-        public void OpenMenu()
-        {
-            IButton generatedButtonObject;
-            generatedButtonObject = Factory.CreateBeginGameButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.beginGameButton, generatedButtonObject));
-            ButtonsId["Menu"].Add(CurrentId);
-            CurrentId++;
-            generatedButtonObject = Factory.CreateLeaveGameButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.leaveGameButton, generatedButtonObject));
-            ButtonsId["Menu"].Add(CurrentId);
-            CurrentId++;
-        }
-
-        public void OpenWinWindow()
-        {
-            ILabel generatedLabelObject;
-            generatedLabelObject = Factory.CreateWinWindow(PlayerInitPos.X, PlayerInitPos.Y);
-            LabelObjects.Add(CurrentId, (Factory.ObjectTypes.winWindow, generatedLabelObject));
-            CurrentId++;
-            IButton generatedButtonObject;
-            generatedButtonObject = Factory.CreateExitToMenuButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.exitToMenuButton, generatedButtonObject));
-            ButtonsId["WinWindow"].Add(CurrentId);
-            CurrentId++;
-            generatedButtonObject = Factory.CreateRestartButton2(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.restartButton2, generatedButtonObject));
-            ButtonsId["WinWindow"].Add(CurrentId);
-            CurrentId++;
-        }
-
-        public void ShowPauseButton()
-        {
-            IButton generatedButtonObject;
-            generatedButtonObject = Factory.CreatePauseButton(PlayerInitPos.X, PlayerInitPos.Y);
-            ButtonObjects.Add(CurrentId, (Factory.ObjectTypes.pauseButton, generatedButtonObject));
-            ButtonsId["PauseButton"].Add(CurrentId);
-            CurrentId++;
+            var ViewWindowObjects = new Dictionary<int, IWindow>();
+            foreach (var window in WindowObjects)
+            {
+                ViewWindowObjects.Add(window.Key, window.Value.Item2);
+            }
+            var ViewButtonObjects = new Dictionary<int, IButton>();
+            foreach (var button in ButtonObjects)
+            {
+                ViewButtonObjects.Add(button.Key, button.Value.Item2);
+            }
+            Updated.Invoke(this,
+                new GameplayEventArgs
+                {
+                    NoSolidObjects = NoSolidObjects,
+                    SolidObjects = SolidObjects,
+                    AttackObjects = AttackObjects,
+                    BackgroundObjects = BackgroundObjects,
+                    WindowObjects = ViewWindowObjects,
+                    ButtonObjects = ViewButtonObjects,
+                    POVShift = PlayerShift,
+                    GameState = GameState
+                });
         }
     }
 }

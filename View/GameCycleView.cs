@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MyGame.Model;
+using MyGame.Model.Objects.MapObjects;
 using MyGame.Model.ObjectTypes;
 using MyGame.Presenter;
 using System;
@@ -16,9 +17,14 @@ namespace MyGame.View
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Dictionary<int, IMapObject> MapObjects = new();
-        private Dictionary<int, ILabel> LabelObjects = new();
+        private Dictionary<int, ISolidObject> SolidObjects = new();
+        private Dictionary<int, NoSolidObject> NoSolidObjects = new();
+        private Dictionary<int, IAttackObject> AttackObjects = new();
+        private Dictionary<int, BackgroundObject> BackgroundObjects = new();
+
+        private Dictionary<int, IWindow> WindowObjects = new();
         private Dictionary<int, IButton> ButtonObjects = new();
+        
         private Dictionary<int, Texture2D> Textures = new();
 
         private Vector2 VisualShift = Vector2.Zero;
@@ -40,18 +46,25 @@ namespace MyGame.View
         public event EventHandler<InputData> ControlInputStates = delegate { };
 
         public void LoadGameCycleParameters(
-            Dictionary<int, IMapObject> MapObjects,
-            Dictionary<int, ILabel> LabelObjects,
+            Dictionary<int, ISolidObject> SolidObjects,
+            Dictionary<int, NoSolidObject> NoSolidObjects,
+            Dictionary<int, IAttackObject> AttackObjects,
+            Dictionary<int, BackgroundObject> BackgroundObjects,
+            Dictionary<int, IWindow> WindowObjects,
             Dictionary<int, IButton> ButtonObjects,
             Vector2 POWShift, GameState GameState)
         {
-            this.MapObjects = MapObjects;
-            this.LabelObjects = LabelObjects;
+            this.SolidObjects = SolidObjects;
+            this.NoSolidObjects = NoSolidObjects;
+            this.AttackObjects = AttackObjects;
+            this.BackgroundObjects = BackgroundObjects;
+
+            this.WindowObjects = WindowObjects;
             this.ButtonObjects = ButtonObjects;
             if ((this.GameState == Menu || this.GameState == RestartWindow || this.GameState == Win) && GameState == Running)
                 VisualShift = new Vector2(
-                    -_graphics.PreferredBackBufferWidth * 0.5f,
-                    -_graphics.PreferredBackBufferHeight * 0.2f);
+                    -_graphics.PreferredBackBufferWidth * 0.15f,
+                    _graphics.PreferredBackBufferHeight * 0.3f);
             else
                 VisualShift += POWShift;
             this.GameState = GameState;
@@ -90,6 +103,9 @@ namespace MyGame.View
             Textures.Add((byte)Factory.ObjectTypes.leaveGameButton, Content.Load<Texture2D>("LeaveGameButtonFrames"));
             Textures.Add((byte)Factory.ObjectTypes.winWindow, Content.Load<Texture2D>("WinWindow"));
             Textures.Add((byte)Factory.ObjectTypes.restartButton2, Content.Load<Texture2D>("RestartButton2Frames"));
+            Textures.Add((byte)Factory.ObjectTypes.clouds, Content.Load<Texture2D>("Clouds"));
+            Textures.Add((byte)Factory.ObjectTypes.sun, Content.Load<Texture2D>("Sun"));
+            Textures.Add((byte)Factory.ObjectTypes.japanHouse, Content.Load<Texture2D>("JapanHouse"));
         }
 
         protected override void Update(GameTime gameTime)
@@ -124,55 +140,52 @@ namespace MyGame.View
             base.Draw(gameTime);
             _spriteBatch.Begin();
 
-            foreach (var obj in MapObjects.Values)
+            foreach (var obj in BackgroundObjects.Values)
             {
-                if (obj is IMapObject)
-                {
-                    if (GameState == Running && obj is IAnimationMapObject animatedObj)
-                    {
-                        _spriteBatch.Draw
-                        (
-                            Textures[obj.ImageId],
-                            obj.Pos - VisualShift,
-                            animatedObj.Animate(Textures[obj.ImageId].Width),
-                            Color.White
-                        );
-                    }
-                    else
-                    {
-                        _spriteBatch.Draw
-                        (
-                            Textures[obj.ImageId],
-                            obj.Pos - VisualShift,
-                            new Rectangle(0, 0, obj.Width, obj.Height),
-                            Color.White
-                        );
-                    }
-                }
+                AnimateMapObjects(obj);
             }
-            foreach (var obj in LabelObjects.Values)
+            foreach (var obj in NoSolidObjects.Values)
             {
-                _spriteBatch.Draw
-                (
-                    Textures[obj.ImageId],
-                    obj.Pos - VisualShift,
-                    Color.White
-                );
+                AnimateMapObjects(obj);
+            }
+            foreach (var obj in SolidObjects.Values)
+            {
+                AnimateMapObjects(obj);
+            }
+            foreach (var obj in AttackObjects.Values)
+            {
+                AnimateMapObjects(obj);
+            }
+
+            foreach (var obj in WindowObjects.Values)
+            {
+                DrawObject(new Rectangle(0, 0, obj.Width, obj.Height), obj);
             }
             foreach (var obj in ButtonObjects.Values)
             {
-                _spriteBatch.Draw
-                (
-                    Textures[obj.ImageId],
-                    obj.Pos - VisualShift,
-                    obj.Animate(Textures[obj.ImageId].Width),
-                    Color.White
-                );
+                DrawObject(obj.Animate(Textures[obj.ImageId].Width), obj);
             }
             
             _spriteBatch.End();
         }
+        private void AnimateMapObjects(IMapObject obj)
+        {
+            if (GameState == Running && obj is IAnimationMapObject animatedObj)
+                DrawObject(animatedObj.Animate(Textures[obj.ImageId].Width), obj);
+            else
+                DrawObject(new Rectangle(0, 0, obj.Width, obj.Height), obj);
+        }
 
+        private void DrawObject(Rectangle frame, IObject obj)
+        {
+            _spriteBatch.Draw
+                (
+                    Textures[obj.ImageId],
+                    obj.Pos - VisualShift,
+                    frame,
+                    Color.White
+                );
+        }
         public void ExitGame()
         {
             Exit();

@@ -122,7 +122,6 @@ namespace MyGame.Model.Objects.MapObjects
 
         public Rectangle Animate(int widthImage)
         {
-
             if (AnimationTimer <= 0)
             {
                 AnimationTimer = 5;
@@ -153,7 +152,7 @@ namespace MyGame.Model.Objects.MapObjects
 
         public void ControlPosHeight()
         {
-            if (Pos.Y > 1500)
+            if (Pos.Y > 2100)
             {
                 HP = 0;
             }

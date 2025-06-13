@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MyGame.Model.Objects.MapObjects;
 using MyGame.Model.ObjectTypes;
 using MyGame.Presenter;
 using MyGame.View;
@@ -43,8 +44,11 @@ namespace MyGame.Model
 
     public class GameplayEventArgs : EventArgs
     {
-        public Dictionary<int, IMapObject> MapObjects { get; set; }
-        public Dictionary<int, ILabel> LabelObjects { get; set; }
+        public Dictionary<int, ISolidObject> SolidObjects { get; set; }
+        public Dictionary<int, NoSolidObject> NoSolidObjects { get; set; }
+        public Dictionary<int, IAttackObject> AttackObjects { get; set; }
+        public Dictionary<int, BackgroundObject> BackgroundObjects { get; set; }
+        public Dictionary<int, IWindow> WindowObjects { get; set; }
         public Dictionary<int, IButton> ButtonObjects { get; set; }
         public Vector2 POVShift { get; set; }
         public GameState GameState { get; set; }
