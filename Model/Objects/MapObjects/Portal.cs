@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model.ObjectTypes;
+using KnightLegends.Model.ObjectTypes;
 
-namespace MyGame.Model.Objects.MapObjects
+namespace KnightLegends.Model.Objects.MapObjects
 {
     public class Portal : NoSolidObject
     {

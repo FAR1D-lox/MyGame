@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model;
-using static MyGame.Model.Direction;
+using KnightLegends.Model;
+using static KnightLegends.Model.Direction;
 
-namespace MyGame.View
+namespace KnightLegends.View
 {
     public static class Animation
     {

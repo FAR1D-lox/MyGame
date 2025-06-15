@@ -7,11 +7,11 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model.ObjectTypes;
-using MyGame.View;
-using static MyGame.Model.Direction;
+using KnightLegends.Model.ObjectTypes;
+using KnightLegends.View;
+using static KnightLegends.Model.Direction;
 
-namespace MyGame.Model.Objects.MapObjects
+namespace KnightLegends.Model.Objects.MapObjects
 {
     public class PlayerHorisontalAttack : IAttackObject
     {
@@ -34,7 +34,6 @@ namespace MyGame.Model.Objects.MapObjects
         public int Damage { get; private set; }
 
 
-
         public PlayerHorisontalAttack(Vector2 position, int width, int height, int imageId, Direction direction)
         {
             ImageId = imageId;
@@ -49,7 +48,6 @@ namespace MyGame.Model.Objects.MapObjects
                 width, height);
             Direction = direction;
             DestructionTimer = 16;
-            ImagePos = new Vector2(int.MinValue, int.MinValue);
             Damage = 15;
         }
 

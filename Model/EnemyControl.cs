@@ -7,12 +7,12 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model.Objects.MapObjects;
-using MyGame.Model.ObjectTypes;
+using KnightLegends.Model.Objects.MapObjects;
+using KnightLegends.Model.ObjectTypes;
 using NUnit.Framework.Internal.Execution;
-using static MyGame.Model.Direction;
+using static KnightLegends.Model.Direction;
 
-namespace MyGame.Model
+namespace KnightLegends.Model
 {
     public static class EnemyControl
     {
@@ -47,12 +47,24 @@ namespace MyGame.Model
                     if (enemy.TryAttack())
                     {
                         IMapObject generatedObject;
-                        if (enemy.Direction == right)
-                            generatedObject = Factory.CreateEnemyAttack(
-                                enemy.Pos.X + enemy.Width, enemy.Pos.Y - enemy.Height / 4, right);
+                        if (enemy.Type == Factory.ObjectTypes.enemy)
+                        {
+                            if (enemy.Direction == right)
+                                generatedObject = Factory.CreateEnemyAttack(
+                                    enemy.Pos.X + enemy.Width, enemy.Pos.Y - enemy.Height / 4, right);
+                            else
+                                generatedObject = Factory.CreateEnemyAttack(
+                                    enemy.Pos.X - 128, enemy.Pos.Y - enemy.Height / 2, left);
+                        }
                         else
-                            generatedObject = Factory.CreateEnemyAttack(
-                                enemy.Pos.X - 128, enemy.Pos.Y - enemy.Height / 2, left);
+                        {
+                            if (enemy.Direction == right)
+                                generatedObject = Factory.CreateAngryEnemyAttack(
+                                    enemy.Pos.X + enemy.Width, enemy.Pos.Y - enemy.Height / 4, right);
+                            else
+                                generatedObject = Factory.CreateAngryEnemyAttack(
+                                    enemy.Pos.X - 128, enemy.Pos.Y - enemy.Height / 2, left);
+                        }
                         MapObjects.Add(CurrentId, generatedObject);
                         AttackObjects.Add(CurrentId, generatedObject as IAttackObject);
                         CurrentId++;

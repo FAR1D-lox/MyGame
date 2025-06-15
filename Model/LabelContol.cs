@@ -7,16 +7,16 @@ using Microsoft.Xna.Framework.Input;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using MyGame.View;
+using KnightLegends.View;
 using MonoGame.Framework.Utilities;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using static MyGame.Model.Direction;
+using static KnightLegends.Model.Direction;
 using static Microsoft.Xna.Framework.Input.ButtonState;
-using MyGame.Presenter;
-using MyGame.Model.ObjectTypes;
-using MyGame.Model.Objects.MapObjects;
+using KnightLegends.Presenter;
+using KnightLegends.Model.ObjectTypes;
+using KnightLegends.Model.Objects.MapObjects;
 
-namespace MyGame.Model
+namespace KnightLegends.Model
 {
     public static class LabelContol
     {

@@ -7,13 +7,13 @@ using Microsoft.Xna.Framework.Input;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using MyGame.View;
+using KnightLegends.View;
 using static System.Net.Mime.MediaTypeNames;
-using MyGame.Model.ObjectTypes;
+using KnightLegends.Model.ObjectTypes;
 
-namespace MyGame.Model.Objects.MapObjects
+namespace KnightLegends.Model.Objects.MapObjects
 {
-    public class MainCharacter : IMapObject, ISolidObject, IGravityObject, IAnimationMapObject, IAliveObject
+    public class MainCharacter : ISolidObject, IGravityObject, IAnimationMapObject, IAliveObject
     {
         public int ImageId { get; }
 
@@ -152,7 +152,7 @@ namespace MyGame.Model.Objects.MapObjects
 
         public void ControlPosHeight()
         {
-            if (Pos.Y > 2100)
+            if (Pos.Y > 2050)
             {
                 HP = 0;
             }

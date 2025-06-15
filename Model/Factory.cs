@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model.Objects.Labels;
-using MyGame.Model.Objects.MapObjects;
+using KnightLegends.Model.Objects.Labels;
+using KnightLegends.Model.Objects.MapObjects;
 
-namespace MyGame.Model
+namespace KnightLegends.Model
 {
     public static class Factory
     {
@@ -36,7 +36,13 @@ namespace MyGame.Model
                 {"RestartButton2", ((byte) ObjectTypes.restartButton2, 160, 160) },
                 {"Clouds", ((byte) ObjectTypes.clouds, 6000, 400) },
                 {"Sun", ((byte) ObjectTypes.sun, 200, 440) },
-                {"JapanHouse", ((byte) ObjectTypes.japanHouse, 240, 360) }
+                {"Mountains", ((byte) ObjectTypes.mountains, 2000, 680) },
+                {"JapanHouse", ((byte) ObjectTypes.japanHouse, 240, 360) },
+                {"Sakura", ((byte) ObjectTypes.sakura, 360, 360) },
+                {"Tree", ((byte) ObjectTypes.tree, 120, 240) },
+                {"DeathTable", ((byte) ObjectTypes.deathTable, 120, 120) },
+                {"AngryEnemy", ((byte) ObjectTypes.angryEnemy, 37, 64) },
+                {"AngryEnemyAttack", ((byte) ObjectTypes.angryEnemyAttack, 128, 128) }
             };
 
         public static MainCharacter CreateMainCharacter(float x, float y, Vector2 speed)
@@ -56,7 +62,9 @@ namespace MyGame.Model
                 new Vector2(x, y),
                 _objects["Enemy"].width,
                 _objects["Enemy"].height,
-                _objects["Enemy"].type);
+                _objects["Enemy"].type,
+                ObjectTypes.enemy,
+                2f);
             enemy.ChangeSpeed(speed.X, speed.Y);
             return enemy;
         }
@@ -119,7 +127,8 @@ namespace MyGame.Model
                 _objects["EnemyAttack"].width,
                 _objects["EnemyAttack"].height,
                 _objects["EnemyAttack"].type,
-                direction);
+                direction,
+                damage: 5);
             return enemyAttack;
         }
 
@@ -275,14 +284,79 @@ namespace MyGame.Model
             return sun;
         }
 
+        public static BackgroundObject CreateMountains(float x, float y)
+        {
+            var mountains = new BackgroundObject(
+                new Vector2(x - 400, y + 680),
+                _objects["Mountains"].width,
+                _objects["Mountains"].height,
+                _objects["Mountains"].type);
+            return mountains;
+        }
+
         public static NoSolidObject CreateJapanHouse(float x, float y)
         {
-            var stoneNoSolid = new NoSolidObject(
+            var japanHouse = new NoSolidObject(
                 new Vector2(x, y),
                 _objects["JapanHouse"].width,
                 _objects["JapanHouse"].height,
                 _objects["JapanHouse"].type);
-            return stoneNoSolid;
+            return japanHouse;
+        }
+
+        public static NoSolidObject CreateSakura(float x, float y)
+        {
+            var sakura = new NoSolidObject(
+                new Vector2(x, y),
+                _objects["Sakura"].width,
+                _objects["Sakura"].height,
+                _objects["Sakura"].type);
+            return sakura;
+        }
+
+        public static NoSolidObject CreateTree(float x, float y)
+        {
+            var tree = new NoSolidObject(
+                new Vector2(x, y),
+                _objects["Tree"].width,
+                _objects["Tree"].height,
+                _objects["Tree"].type);
+            return tree;
+        }
+
+        public static NoSolidObject CreateDeathTable(float x, float y)
+        {
+            var deathTable = new NoSolidObject(
+                new Vector2(x, y),
+                _objects["DeathTable"].width,
+                _objects["DeathTable"].height,
+                _objects["DeathTable"].type);
+            return deathTable;
+        }
+
+        public static Enemy CreateAngryEnemy(float x, float y, Vector2 speed)
+        {
+            var angryEnemy = new Enemy(
+                new Vector2(x, y),
+                _objects["AngryEnemy"].width,
+                _objects["AngryEnemy"].height,
+                _objects["AngryEnemy"].type,
+                ObjectTypes.angryEnemy,
+                4f);
+            angryEnemy.ChangeSpeed(speed.X, speed.Y);
+            return angryEnemy;
+        }
+
+        public static EnemyAttack CreateAngryEnemyAttack(float x, float y, Direction direction)
+        {
+            var angryEnemyAttack = new EnemyAttack(
+                new Vector2(x, y),
+                _objects["AngryEnemyAttack"].width,
+                _objects["AngryEnemyAttack"].height,
+                _objects["AngryEnemyAttack"].type,
+                direction,
+                damage: 10);
+            return angryEnemyAttack;
         }
 
         public enum ObjectTypes : byte
@@ -308,7 +382,13 @@ namespace MyGame.Model
             restartButton2,
             clouds,
             sun,
-            japanHouse
+            mountains,
+            japanHouse,
+            sakura,
+            tree,
+            deathTable,
+            angryEnemy,
+            angryEnemyAttack
         }
     }
 }

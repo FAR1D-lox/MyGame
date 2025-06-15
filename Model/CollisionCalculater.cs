@@ -7,9 +7,9 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model.ObjectTypes;
+using KnightLegends.Model.ObjectTypes;
 
-namespace MyGame.Model
+namespace KnightLegends.Model
 {
     public static class CollisionCalculater
     {
@@ -29,8 +29,17 @@ namespace MyGame.Model
 
         public static void ActivateCollisionCalculater()
         {
+            UpdateGravityObjectsSpeed();
             CalculateCollisionPreparation();
             CheckGroundedObjects();
+        }
+
+        private static void UpdateGravityObjectsSpeed()
+        {
+            foreach (var gravityObject in GravityObjects.Values)
+            {
+                gravityObject.UpdateGravity();
+            }
         }
 
         private static void CalculateCollisionPreparation()

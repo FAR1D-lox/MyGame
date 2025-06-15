@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using MyGame.Model.Objects.MapObjects;
-using MyGame.Model.ObjectTypes;
+using KnightLegends.Model.Objects.MapObjects;
+using KnightLegends.Model.ObjectTypes;
 
-namespace MyGame.Model
+namespace KnightLegends.Model
 {
     public static class AttacksControl
     {

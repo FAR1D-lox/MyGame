@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model.Objects.MapObjects;
-using MyGame.Model.ObjectTypes;
-using MyGame.Presenter;
-using MyGame.View;
+using KnightLegends.Model.Objects.MapObjects;
+using KnightLegends.Model.ObjectTypes;
+using KnightLegends.Presenter;
+using KnightLegends.View;
 
-namespace MyGame.Model
+namespace KnightLegends.Model
 {
     public interface IGameplayModel
     {

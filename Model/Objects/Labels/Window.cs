@@ -7,9 +7,9 @@ using Microsoft.Xna.Framework.Input;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using MyGame.Model.ObjectTypes;
+using KnightLegends.Model.ObjectTypes;
 
-namespace MyGame.Model.Objects.Labels
+namespace KnightLegends.Model.Objects.Labels
 {
     public class Window : IWindow
     {

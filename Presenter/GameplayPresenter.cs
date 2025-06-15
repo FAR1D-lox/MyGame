@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model;
-using MyGame.View;
-using static MyGame.Presenter.GameState;
+using KnightLegends.Model;
+using KnightLegends.View;
+using static KnightLegends.Presenter.GameState;
 using static Microsoft.Xna.Framework.Input.ButtonState;
 
-namespace MyGame.Presenter
+namespace KnightLegends.Presenter
 {
     public class GameplayPresenter
     {

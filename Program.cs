@@ -1,4 +1,4 @@
-﻿using MyGame.Presenter;
+﻿using KnightLegends.Presenter;
 using System;
 
 public static class Program
@@ -7,7 +7,7 @@ public static class Program
     static void Main()
     {  
         GameplayPresenter game = new GameplayPresenter(
-          new MyGame.View.GameCycleView(), new MyGame.Model.GameCycle()
+          new KnightLegends.View.GameCycleView(), new KnightLegends.Model.GameCycle()
         );
         game.LaunchGame();
     }

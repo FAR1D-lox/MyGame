@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model.ObjectTypes;
-using MyGame.View;
-using static MyGame.Model.Direction;
+using KnightLegends.Model.ObjectTypes;
+using KnightLegends.View;
+using static KnightLegends.Model.Direction;
 
-namespace MyGame.Model.Objects.MapObjects
+namespace KnightLegends.Model.Objects.MapObjects
 {
     public class Enemy : IMapObject, ISolidObject, IGravityObject, IAnimationMapObject, IAliveObject
     {
@@ -35,10 +35,13 @@ namespace MyGame.Model.Objects.MapObjects
         public int HP { get; set; }
         public int ImmortalTimer { get; private set; }
         public int AttackTimer { get; private set; }
+        public float BaseEnemySpeed { get; }
+
+        public Factory.ObjectTypes Type { get; }
 
         private Direction AttackDirection;
 
-        public Enemy(Vector2 position, int width, int height, int imageId)
+        public Enemy(Vector2 position, int width, int height, int imageId, Factory.ObjectTypes type, float baseEnemySpeed)
         {
             ImageId = imageId;
             AnimationTimer = 0;
@@ -59,6 +62,8 @@ namespace MyGame.Model.Objects.MapObjects
             ImmortalTimer = 0;
             AttackTimer = 60;
             AttackDirection = None;
+            Type = type;
+            BaseEnemySpeed = baseEnemySpeed;
         }
 
         public void JumpAttempt()
@@ -115,14 +120,14 @@ namespace MyGame.Model.Objects.MapObjects
             if (Direction == left)
             {
                 if (!CollisionCalculater.CheckLeftSide(this))
-                    ChangeSpeed(-2f, Speed.Y);
+                    ChangeSpeed(-BaseEnemySpeed, Speed.Y);
                 else
                     ChangeSpeed(0, Speed.Y);
             }
             else if (Direction == right)
             {
                 if (!CollisionCalculater.CheckRightSide(this))
-                    ChangeSpeed(2f, Speed.Y);
+                    ChangeSpeed(BaseEnemySpeed, Speed.Y);
                 else
                     ChangeSpeed(0, Speed.Y);
             }
@@ -162,15 +167,16 @@ namespace MyGame.Model.Objects.MapObjects
             MoveCollider();
             UpdateAttackTimer();
             UpdateImmortalTimer();
+            ControlPosHeight();
         }
 
 
         public void ChangeDirection(Vector2 playerPos)
         {
             var differentCoordinates = playerPos - Pos;
-            if (differentCoordinates.X > 1e-1)
+            if (differentCoordinates.X > -1e-1 && differentCoordinates.X < 700)
                 Direction = right;
-            else if (differentCoordinates.X < 1e-1)
+            else if (differentCoordinates.X < 1e-1 && differentCoordinates.X > -700)
                 Direction = left;
             else
                 Direction = None;
@@ -205,6 +211,13 @@ namespace MyGame.Model.Objects.MapObjects
 
         }
 
+        public void ControlPosHeight()
+        {
+            if (Pos.Y > 2050)
+            {
+                HP = 0;
+            }
+        }
         private void UpdateImmortalTimer()
         {
             ImmortalTimer -= 1;

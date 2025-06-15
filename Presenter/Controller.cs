@@ -1,15 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model;
+using KnightLegends.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Timers;
-using static MyGame.Model.Direction;
+using static KnightLegends.Model.Direction;
 
-namespace MyGame.Presenter
+namespace KnightLegends.Presenter
 {
     public static class Controller
     {

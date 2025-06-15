@@ -1,16 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model;
-using MyGame.Model.Objects.MapObjects;
-using MyGame.Model.ObjectTypes;
-using MyGame.Presenter;
+using KnightLegends.Model;
+using KnightLegends.Model.Objects.MapObjects;
+using KnightLegends.Model.ObjectTypes;
+using KnightLegends.Presenter;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using static MyGame.Presenter.GameState;
+using static KnightLegends.Presenter.GameState;
 
-namespace MyGame.View
+namespace KnightLegends.View
 {
     public class GameCycleView : Game, IGameplayView
     {
@@ -73,7 +73,7 @@ namespace MyGame.View
         protected override void Initialize()
         {
             base.Initialize();
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
             _graphics.PreferredBackBufferHeight = 1080;
             _graphics.PreferredBackBufferWidth = 1920;
             _graphics.ApplyChanges();
@@ -106,7 +106,12 @@ namespace MyGame.View
             Textures.Add((byte)Factory.ObjectTypes.clouds, Content.Load<Texture2D>("Clouds"));
             Textures.Add((byte)Factory.ObjectTypes.sun, Content.Load<Texture2D>("Sun"));
             Textures.Add((byte)Factory.ObjectTypes.japanHouse, Content.Load<Texture2D>("JapanHouse"));
-        }
+            Textures.Add((byte)Factory.ObjectTypes.sakura, Content.Load<Texture2D>("Sakura"));
+            Textures.Add((byte)Factory.ObjectTypes.tree, Content.Load<Texture2D>("Tree"));
+            Textures.Add((byte)Factory.ObjectTypes.mountains, Content.Load<Texture2D>("Mountains"));
+            Textures.Add((byte)Factory.ObjectTypes.deathTable, Content.Load<Texture2D>("DeathTable"));
+            Textures.Add((byte)Factory.ObjectTypes.angryEnemy, Content.Load<Texture2D>("AngryEnemyFrames"));
+            Textures.Add((byte)Factory.ObjectTypes.angryEnemyAttack, Content.Load<Texture2D>("AngryEnemyAttackFrames"));        }
 
         protected override void Update(GameTime gameTime)
         {

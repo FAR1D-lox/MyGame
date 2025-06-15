@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Model.ObjectTypes
+namespace KnightLegends.Model.ObjectTypes
 {
     public interface IObject
     {

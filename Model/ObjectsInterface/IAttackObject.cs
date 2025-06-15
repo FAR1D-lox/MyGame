@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Model.ObjectTypes
+namespace KnightLegends.Model.ObjectTypes
 {
     public interface IAttackObject : IAnimationMapObject, IMapObject
     {

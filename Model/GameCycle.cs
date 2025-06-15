@@ -7,14 +7,14 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model.Objects.Labels;
-using MyGame.Model.Objects.MapObjects;
-using MyGame.Model.ObjectTypes;
-using MyGame.Presenter;
-using MyGame.View;
-using static MyGame.Presenter.GameState;
+using KnightLegends.Model.Objects.Labels;
+using KnightLegends.Model.Objects.MapObjects;
+using KnightLegends.Model.ObjectTypes;
+using KnightLegends.Presenter;
+using KnightLegends.View;
+using static KnightLegends.Presenter.GameState;
 
-namespace MyGame.Model
+namespace KnightLegends.Model
 {
     public class GameCycle : IGameplayModel
     {
@@ -80,18 +80,6 @@ namespace MyGame.Model
             LabelContol.ConnectLabelControl(WindowObjects, ButtonObjects, ButtonsId);
             LabelContol.OpenMenu(PlayerInitPos, CurrentId);
 
-            var ViewLabelObjects = new Dictionary<int, IWindow>();
-            foreach (var label in WindowObjects)
-            {
-                ViewLabelObjects.Add(label.Key, label.Value.Item2);
-            }
-            var ViewButtonObjects = new Dictionary<int, IButton>();
-            foreach (var button in ButtonObjects)
-            {
-                ViewButtonObjects.Add(button.Key, button.Value.Item2);
-            }
-
-
             CallUpdated();
         }
 
@@ -134,7 +122,7 @@ namespace MyGame.Model
                 EnemyControl.BeginEnemyControl(CurrentId);
                 CurrentId = EnemyControl.CurrentId;
 
-                UpdateGravityObjectsSpeed();
+                
                 CollisionCalculater.ActivateCollisionCalculater();
                 AttacksControl.ActivateAttacksControl();
 
@@ -180,17 +168,6 @@ namespace MyGame.Model
             }
             return false;
         }
-
-        private void UpdateGravityObjectsSpeed()
-        {
-            foreach (var gravityObject in GravityObjects.Values)
-            {
-                gravityObject.UpdateGravity();
-            }
-        }
-
-
-
 
         public void ControlLabels()
         {

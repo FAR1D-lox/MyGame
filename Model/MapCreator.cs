@@ -8,10 +8,10 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model.Objects.MapObjects;
-using MyGame.Model.ObjectTypes;
+using KnightLegends.Model.Objects.MapObjects;
+using KnightLegends.Model.ObjectTypes;
 
-namespace MyGame.Model
+namespace KnightLegends.Model
 {
     public static class MapCreator
     {
@@ -23,7 +23,7 @@ namespace MyGame.Model
         private static Dictionary<int, BackgroundObject> BackgroundObjects;
 
         private static readonly int TileSize = 120;
-        private static readonly char[,] Map = new char[50, 20];
+        private static char[,] Map;
         public static int CurrentId { get; private set; }
         public static int PlayerId { get; private set; }
         public static int PortalId { get; private set; }
@@ -50,42 +50,50 @@ namespace MyGame.Model
         public static void CreateFirstMap()
         {
             IsPlayerPlaced = false;
-            Map[9, 7] = 'H';
-            Map[5, 9] = 'P';
-            Map[12, 9] = 'p';
-            Map[1, 9] = 'G';
-            Map[2, 1] = 'c';
-            Map[0, 2] = 'C';
-            /*Map[4, 2] = 'E';
-            Map[6, 2] = 'E';
-            Map[8, 2] = 'E';
-            Map[10, 2] = 'E';*/
-            Map[12, 2] = 'E';
-            for (int x = 0; x < Map.GetLength(0); x++)
+            Map = new char[,]
             {
-                Map[x, 10] = 'G';
-            }
-            for (int y = 11; y < Map.GetLength(1); y++)
+                 /*0*/{'M', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'E', '0', '0', '0', '0', 'E', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'E', 'e', '0'},/*0*/
+                 /*1*/{'0', '0', 'c', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'E', 'E', '0'},/*1*/
+                 /*2*/{'C', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'H', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'E', 'E', '0'},/*2*/
+                 /*3*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 't', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'H', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'},/*3*/
+                 /*4*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'E', '0', '0', '0', '0', '0', '0', '0', '0', 'H', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 't', '0', '0', '0', '0', '0', '0'},/*4*/
+                 /*5*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 't', '0', '0', 'T', 'E', '0', 'G', 'G', 'G', 'G', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 't', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'H', '0', '0', '0'},/*5*/
+                 /*6*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'G', 'G', 's', 's', 's', 's', 'G', 'G', 'G', 'G', '0', '0', '0', '0', '0', 'T', '0', '0', '0', '0', '0', '0', '0', '0', 'G', 'G', 'G', 'G', '0', '0', '0', '0', '0', '0', '0', '0'},/*6*/
+                 /*7*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 'G', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 'G', 'G', 'G', 'G', '0', '0', '0', '0', 'p', '0', '0', 'G', 'G', 'G', 's', 's', 's', 's', 'G', 'G', 'G', '0', '0', '0', '0', '0'},/*7*/
+                 /*8*/{'0', 'T', '0', '0', '0', '0', '0', 'T', '0', 'E', 'G', 'G', 'G', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 'G', 'G', 'G', 'G', 'D'},/*8*/
+                 /*9*/{'D', '0', '0', '0', '0', 'P', '0', '0', '0', 'G', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 'G'},/*9*/
+                /*10*/{'G', 'G', 'G', '0', '0', '0', 'G', 'G', 'G', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 'S'},/*10*/
+                /*11*/{'S', 's', 's', 'G', 'G', 'G', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 's', 'S'},/*11*/
+              /*s 12*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'},/*s 12*/
+              /*s 13*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'},/*s 13*/
+              /*s 14*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'},/*s 14*/
+              /*s 15*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'},/*s 15*/
+              /*s 16*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'},/*s 16*/
+              /*s 17*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'},/*s 17*/
+              /*s 18*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'},/*s 18*/
+              /*s 19*/{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'},/*s 19*/
+            };
+            for (int y = 12; y < Map.GetLength(0) - 1; y++)
             {
-                for (int x = 1; x < Map.GetLength(0) - 1; x++)
+                for (int x = 1; x < Map.GetLength(1); x++)
                 {
-                    Map[x, y] = 's';
+                    Map[y, x] = 's';
                 }
-                Map[0, y] = 'S';
-                Map[Map.GetLength(0) - 1, y] = 'S';
+                Map[y, 0] = 'S';
+                Map[y, Map.GetLength(1) - 1] = 'S';
             }
             GenerateAllObjects();
         }
 
         private static void GenerateAllObjects()
         {
-            for (int y = 0; y < Map.GetLength(1); y++)
+            for (int y = 0; y < Map.GetLength(0); y++)
             {
-                for (int x = 0; x < Map.GetLength(0); x++)
+                for (int x = 0; x < Map.GetLength(1); x++)
                 {
-                    if (Map[x, y] != '\0')
+                    if (Map[y, x] != '0')
                     {
-                        IMapObject generatedObject = GenerateObject(Map[x, y], x, y);
+                        IMapObject generatedObject = GenerateObject(Map[y, x], x, y);
                         MapObjects.Add(CurrentId, generatedObject);
                         if (generatedObject is ISolidObject solidObj)
                             SolidObjects.Add(CurrentId, solidObj);
@@ -97,16 +105,16 @@ namespace MyGame.Model
                             BackgroundObjects.Add(CurrentId, backgroundObj);
                         if (generatedObject is NoSolidObject noSolidObj)
                             NoSolidObjects.Add(CurrentId, noSolidObj);
-                        if (Map[x, y] == 'P' && !IsPlayerPlaced)
+                        if (Map[y, x] == 'P' && !IsPlayerPlaced)
                         {
                             PlayerId = CurrentId;
                             IsPlayerPlaced = true;
                         }
-                        if (Map[x, y] == 'p')
+                        if (Map[y, x] == 'p')
                         {
                             PortalId = CurrentId;
                         }
-                        if (Map[x, y] == 'C')
+                        if (Map[y, x] == 'C')
                         {
                             CloudsId = CurrentId;
                         }
@@ -116,10 +124,10 @@ namespace MyGame.Model
             }
         }
 
-        private static IMapObject GenerateObject(char sign, int xTile, int yTile)
+        private static IMapObject GenerateObject(char sign, int yTile, int xTile)
         {
-            float x = xTile * TileSize;
-            float y = yTile * TileSize;
+            float x = yTile * TileSize;
+            float y = xTile * TileSize;
 
             IMapObject generatedObject = null;
 
@@ -137,7 +145,13 @@ namespace MyGame.Model
                     y: y + TileSize / 2,
                     speed: new Vector2(0, 0));
             }
-
+            else if (sign == 'e')
+            {
+                generatedObject = Factory.CreateAngryEnemy(
+                    x: x + TileSize / 2,
+                    y: y + TileSize / 2,
+                    speed: new Vector2(0, 0));
+            }
             else if (sign == 'G')
             {
                 generatedObject = Factory.CreateGrass(
@@ -176,9 +190,33 @@ namespace MyGame.Model
                     x + TileSize / 2,
                     y + TileSize / 2);
             }
+            else if (sign == 'M')
+            {
+                generatedObject = Factory.CreateMountains(
+                    x + TileSize / 2,
+                    y + TileSize / 2);
+            }
             else if (sign == 'H')
             {
                 generatedObject = Factory.CreateJapanHouse(
+                    x + TileSize / 2,
+                    y + TileSize / 2);
+            }
+            else if (sign == 't')
+            {
+                generatedObject = Factory.CreateSakura(
+                    x + TileSize / 2,
+                    y + TileSize / 2);
+            }
+            else if (sign == 'T')
+            {
+                generatedObject = Factory.CreateTree(
+                    x + TileSize / 2,
+                    y + TileSize / 2);
+            }
+            else if (sign == 'D')
+            {
+                generatedObject = Factory.CreateDeathTable(
                     x + TileSize / 2,
                     y + TileSize / 2);
             }

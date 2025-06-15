@@ -7,11 +7,11 @@ using System.Xml.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MyGame.Model.ObjectTypes;
-using MyGame.View;
-using static MyGame.Model.Direction;
+using KnightLegends.Model.ObjectTypes;
+using KnightLegends.View;
+using static KnightLegends.Model.Direction;
 
-namespace MyGame.Model.Objects.MapObjects
+namespace KnightLegends.Model.Objects.MapObjects
 {
     public class EnemyAttack : IAttackObject
     {
@@ -31,10 +31,10 @@ namespace MyGame.Model.Objects.MapObjects
 
         public Direction Direction { get; private set; }
         private int DestructionTimer { get; set; }
-        public int Damage { get; private set; }
+        public int Damage { get; }
 
 
-        public EnemyAttack(Vector2 position, int width, int height, int imageId, Direction direction)
+        public EnemyAttack(Vector2 position, int width, int height, int imageId, Direction direction, int damage)
         {
             ImageId = imageId;
             AnimationTimer = 0;
@@ -48,7 +48,7 @@ namespace MyGame.Model.Objects.MapObjects
                 width, height);
             Direction = direction;
             DestructionTimer = 20;
-            Damage = 20;
+            Damage = damage;
         }
 
         public void MoveCollider()

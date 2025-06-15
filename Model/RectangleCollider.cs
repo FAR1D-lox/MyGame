@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGame.Model
+namespace KnightLegends.Model
 {
     public class RectangleCollider
     {

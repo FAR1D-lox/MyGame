@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace MyGame.Model.ObjectTypes
+namespace KnightLegends.Model.ObjectTypes
 {
     public interface IAnimationMapObject : IAnimationObject
     {
