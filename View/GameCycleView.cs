@@ -39,7 +39,6 @@ namespace KnightLegends.View
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-
         }
 
         public event EventHandler CycleFinished = delegate { };
