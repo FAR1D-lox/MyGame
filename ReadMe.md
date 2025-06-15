@@ -6,8 +6,7 @@
 Возрастной рейтинг – 6+.\
 Дата публикации – неизвестна.\
 Вдохновители: Terraria.\
-Титульная картинка: \
-[Титульная картинка](https://github.com/FAR1D-lox/MyGame/raw/master/Content/image.png)\
+Титульная картинка: [Титульная картинка](https://github.com/FAR1D-lox/MyGame/raw/master/Content/image.png)\
 Контактные данные: Taras.Buriachenko@urfu.me
 
 ### Игровой процесс / поток.
